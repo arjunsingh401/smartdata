@@ -75,6 +75,14 @@
 		  <artifactId>mssql-jdbc</artifactId>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/sqljdbc42 -->
+		<!--  <dependency>
+		    <groupId>com.microsoft.sqlserver</groupId>
+		    <artifactId>sqljdbc42</artifactId>
+		    <version>6.0.8112</version>
+		</dependency>  -->
+				
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -117,6 +125,12 @@
 		  <artifactId>javax.servlet-api</artifactId>
 		  <version>3.1.0</version>
 		</dependency>
+		 <dependency>
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-configuration-processor</artifactId>
+		   <optional>true</optional>
+		 </dependency>
+		 
 	</dependencies>
 
 	<build>
