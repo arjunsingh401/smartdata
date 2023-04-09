@@ -14,5 +14,6 @@ import com.sdc.model.Schema;
 public interface FieldsService {
 
 	List<Schema> getSourceFields(String source);
+	List<Schema> getTargetFields(String source);
 
 }

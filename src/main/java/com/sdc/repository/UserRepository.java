@@ -5,15 +5,15 @@ package com.sdc.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
+import com.sdc.model.User;
 
 /**
  * @author arjun
@@ -23,55 +23,38 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserRepository {
 
-	 @Autowired
-	 @Qualifier("jdbcTemplate1")
-	 private JdbcTemplate jdbcTemplate1;
+	private static final Logger logger = LogManager.getLogger(UserRepository.class);
 	
-	 @Autowired
-	 @Qualifier("jdbcTemplate2")
-	 private JdbcTemplate jdbcTemplate2;
-	 
 	 @Autowired
 	 @Qualifier("jdbcTemplate3")
 	 private JdbcTemplate jdbcTemplate3;
 	 
-	 public void getAllUser() {
-		  String sql1 = "select * from users where userid=0";
-		  //get users list from db1
-		  List<String> list1 = jdbcTemplate1.query(sql1, new RowMapper<String>(){
-			  
-			  @Override
-			  public String mapRow(ResultSet rs, int i) throws SQLException{
-				  System.out.println("sql1 username : "+rs.getString("USERNAME"));
-				return rs.getString("USERNAME");
-			  }
-			  
-		  });
-		  
-		  String sql2 = "select * from users where userid=130089";
-		  //get users list from db2
-		  List<String> list2 = jdbcTemplate2.query(sql2, new RowMapper<String>(){
-			  
-			  @Override
-			  public String mapRow(ResultSet rs, int i) throws SQLException{
-				  System.out.println("sql2 username : "+rs.getString("USERNAME"));
-				return rs.getString("USERNAME");
-			  }
-			  
-		  });
-		  
-		  String sql3 = "select * from users where userid=1";
-		  //get users list from db2
-		  List<String> list3 = jdbcTemplate3.query(sql2, new RowMapper<String>(){
-			  
-			  @Override
-			  public String mapRow(ResultSet rs, int i) throws SQLException{
-				  System.out.println("sql3 username : "+rs.getString("USERNAME"));
-				return rs.getString("USERNAME");
-			  }
-			  
-		  });
-		  
+	 public User getUserDetails(int vendorId) {
+		 User user =new User();
+		  String sql = "select * from users where VENDOR_ID="+vendorId+"";
+		  logger.info("sql : "+sql);
+		   user = jdbcTemplate3.query(sql,new ResultSetExtractor<User>() {
+			    @Override
+			    public User extractData(ResultSet rs) throws SQLException, DataAccessException {
+			    	User user =new User();
+			    	if(rs.next()) {
+			    		user.setUserId(rs.getInt("USERID"));	
+			    		user.setUserName(rs.getString("USERNAME"));
+			    		user.setPassword(rs.getString("PASSWORD"));
+			    		user.setFirstName(rs.getString("FIRST_NAME"));
+			    		user.setLastName(rs.getString("LAST_NAME"));
+			    		user.setMiddleName(rs.getString("MIDDLE_NAME"));
+			    		user.setCompanyName(rs.getString("COMPANYNAME"));
+			    		user.setVendorId(rs.getInt("VENDOR_ID"));
+			    		user.setVendorExpDate(rs.getString("VENDOR_EXP_DATE"));
+			    		user.setEmailId(rs.getString("EMAIL_ID"));
+			    		user.setPhone(rs.getString("PHONE"));
+			    		user.setActive(rs.getString("ACTIVE"));
+			    	}
+			    	return user;	
+			    }
+			});
+		   return user;
 		 }
 	 
 }

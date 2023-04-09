@@ -40,4 +40,17 @@ public class FieldsServiceImpl implements FieldsService {
 		}
 		return schemas;
 	}
+	@Override
+	public List<Schema> getTargetFields(String source ) {
+		logger.info("source : "+source);
+		List<Schema> schemas = new ArrayList<Schema>();
+		try {
+		schemas= fieldRepository.getTargetFields(source);
+		logger.info("schemas : "+schemas.size());
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("",e);
+		}
+		return schemas;
+	}
 }
