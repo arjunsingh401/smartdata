@@ -320,7 +320,7 @@ height: 65px;
  		});
  		
  		$.ajax({
- 			url: "http://localhost:8080/smartdata/createMapping",	   
+ 			url: "${pageContext.request.contextPath}/createMapping",	   
  			type : "POST",
  			contentType: "application/json",
     		data: JSON.stringify(arr),
@@ -347,18 +347,18 @@ height: 65px;
  		
  		var schemaData = $.ajax({
  		    type: 'GET',       
- 		    url: "http://localhost:8080/smartdata/getSourceFields/"+sourceDatabase,	    
+ 		    url: "${pageContext.request.contextPath}/getSourceFields/"+sourceDatabase,	    
  		    dataType: 'json',
  		    context: document.body,
  		    global: false,
  		    async:false,
  		    success: function(data) {
- 		    	alert('Connection successfull');
+ 		    	alert('Source connection successfull');
  		       	document.getElementById('sourceDatabase').disabled = true;
  		        return data;
  		    },
 			error : function(xhr, ajaxOptions, thrownError) {
-				alert('Unable to Connect.');
+				alert('Unable to Connect Source DB.');
 			}
  		}).responseText;
  		
@@ -457,18 +457,18 @@ height: 65px;
         
         var schemaTargetData = $.ajax({
  		    type: 'GET',       
- 		    url: "http://localhost:8080/smartdata/getTargetFields/"+targetDatabase,	    
+ 		    url: "${pageContext.request.contextPath}/getTargetFields/"+targetDatabase,	    
  		    dataType: 'json',
  		    context: document.body,
  		    global: false,
  		    async:false,
  		    success: function(data) {
- 		    	alert('Connection successfull');
+ 		    	alert('Target Connection successfull');
  		        document.getElementById('targetDatabase').disabled = true;
  		        return data;
  		    },
 			error : function(xhr, ajaxOptions, thrownError) {
-				alert('Unable to Connect.');
+				alert('Unable to Connect Target DB.');
 			}
  		}).responseText;
  		

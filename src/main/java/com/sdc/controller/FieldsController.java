@@ -75,7 +75,11 @@ public class FieldsController {
 		logger.info("createMapping  : "+mappingData.size());
 		
 		for(int a=0;a<mappingData.size();a++) {
+			logger.info(mappingData.get(a).getSchema() + " :::" +mappingData.get(a).getT_schema());
+			logger.info(mappingData.get(a).getTable() + " :::" +mappingData.get(a).getT_table());
 			logger.info(mappingData.get(a).getName() + " :::" +mappingData.get(a).getT_name());
+			logger.info(mappingData.get(a).getDataType() + " :::" +mappingData.get(a).getT_dataType());
+			logger.info(mappingData.get(a).getLength() + " :::" +mappingData.get(a).getT_length());
 		}
 	}
 }
