@@ -558,7 +558,7 @@ height: 65px;
  				    		row.id = 'id_'+index+"::t";
  				    		cell.className="ttthirdRowCell_"+index
  				    		
- 				    		var content = '<select id="id_'+index+'_t" class="targetTableFields form-control"><option value="">-- Select Field --</option></select>';
+ 				    		var content = '<select id="id_'+index+'_tname" class="targetTableFields form-control"><option value="">-- Select Field --</option></select>';
  				    		content = content +'<input type="hidden" id="id_'+index+'_tdataType" value="'+element.dataType+'">';
  				    		content = content +'<input type="hidden" id="id_'+index+'_tlength"  value="'+element.length+'">';
  				    		$(".ttthirdRowCell_"+index).html(content);
