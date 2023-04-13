@@ -346,7 +346,7 @@ height: 65px;
  		$('#loadingModal').modal('show');
  		setTimeout(function(){
  			sourceConnection();
- 		}, 2000);
+ 		}, 1000);
  	}
  	
  	function sourceConnection(){
@@ -461,7 +461,7 @@ height: 65px;
  		$('#loadingModal').modal('show');
  		setTimeout(function(){
  			targetConnection();
- 		}, 2000);
+ 		}, 1000);
  	}
 
  	
