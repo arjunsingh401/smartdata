@@ -11,22 +11,21 @@
 <title>SDC Home</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui;
 }
 
 .topnav {
-  overflow: hidden;
-  background-color: #010860;
+  background-color: #4b52a4;
 }
 
 .topnav a {
   float: left;
   color: #f2f2f2;
   text-align: center;
-  padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
 }
@@ -41,12 +40,6 @@ body {
   color: white;
 }
 
-.table {
-		    width: 65%;
-		    max-width: 65%;
-		    margin-bottom: 1rem;
-		    background-color: transparent;
-		}
 .float-container {
     border: 3px solid #fff;
     padding: 20px;
@@ -57,371 +50,511 @@ body {
     float: left;
     padding: 20px;
     border: 2px solid red;
+}
+.card-body{
+	padding: 0px;
 }  		
+#myTargetTable td ,#mySoureTable td{
+	height: 65px;
+}
+#sourceBody td,#destinationBody td {
+height: 65px;
+}
 </style>
 </head>
 <body>
-<div class="topnav">
-<a href="#" class="logo">Smart Data Connector</a>
-<div  align="right">
-  <a class="active"  href="#home">Home</a>
-  <a href="#news">Jobs</a>
-</div>
-</div>
-
-<form:form  style="width: 620px;"  name="homeform" modelAttribute="schemaForm" action="#" method="post">
-
-  <%--   <table class="table table-bordered table-hover" id="myTable" >
-  <thead>
-    <tr>      
-      <th scope="col">Source</th>
-      <th scope="col">Destination</th>      
-    </tr>
-  </thead>
-  <tbody>
-    <tr>      
-      <td>Please select Schema:
-      		<select  name="sourceSchema" id="schema">
-                <option value="">-- Select Schema --</option>
-            </select>
-           
-      </td>
-      <td>Please select Schema:
-      		<select name="targetSchema" id="targetSchema">
-                <option value="">-- Select Schema --</option>
-            </select>
-      </td>      
-    </tr>
-    <tr>      
-      <td>Please select Table:
-      		<select name="" id="table">
-                <option value="">-- Select Table --</option>
-            </select>
-      </td>
-      <td>Please select Table:
-      		<select name="" id="targetTable">
-                <option value="">-- Select Table --</option>
-            </select>
-      </td>      
-    </tr>      
-     
-     <tr id="targetColumn">      
-      <td id="sourceColumn">Please select Column:
-      		Source Column  ${schemas}
-      </td>
-      <td id="targetColumntd">Please select Column:
-      		Target Column
-      </td>      
-    </tr>    
-     
-  </tbody>
-  </table> --%>
-  <div class="float-container">
-  <div class="float-child" align="right">
-    <!-- <div class="green">Float Column 1</div> -->
-      <table class="table table-bordered table-hover" id="myTable" >
-  <thead>
-    <tr>      
-      <th scope="col">Source</th>
-      <!-- <th scope="col">Destination</th>  -->     
-    </tr>
-  </thead>
-  <tbody>
-    <tr>      
-      <td>Please select Schema:
-      		<select  name="sourceSchema" id="schema">
-                <option value="">-- Select Schema --</option>
-            </select>
-           
-      </td>
-      <!-- <td>Please select Schema:
-      		<select name="targetSchema" id="targetSchema">
-                <option value="">-- Select Schema --</option>
-            </select>
-      </td> -->      
-    </tr>
-    <tr>      
-      <td>Please select Table:
-      		<select name="" id="table">
-                <option value="">-- Select Table --</option>
-            </select>
-      </td>
-    <!--   <td>Please select Table:
-      		<select name="" id="targetTable">
-                <option value="">-- Select Table --</option>
-            </select>
-      </td> -->      
-    </tr>      
-     
-     <tr id="targetColumn">      
-      <td id="sourceColumn"><b> Please select Source Column</b>
-      </td>
-      <!-- <td id="targetColumntd">Please select Column:
-      		Target Column
-      </td>  -->     
-    </tr>    
-     
-  </tbody>
-  </table>
+<nav class="navbar navbar-expand-lg navbar-dark bg-darknavbar navbar-expand-lg navbar-dark topnav">
+  <a class="navbar-brand" href="#">Smart Data Connector</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link active" href="#home">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#news">Jobs</a>
+      </li>
+    </ul>
   </div>
-  <div class="float-child">
-    <!-- <div class="blue">Float Column 2</div> -->
-      <table class="table table-bordered table-hover" id="myTargetTable" >
-  <thead>
-    <tr>      
-      <!-- <th scope="col">Source</th> -->
-      <th scope="col">Destination</th>      
-    </tr>
-  </thead>
-  <tbody>
-    <tr>      
-     <%--  <td>Please select Schema:
-      		<select  name="sourceSchema" id="schema">
-                <option  value="">select</option>
-                <logic:forEach items="${schemas}" var="schema">
-                <option value="${schema.schemaName}">${schema.schemaName}</option>
-                </logic:forEach>
-      
-            </select>
-           
-      </td> --%>
-      <td>Please select Schema:
-      		<select name="targetSchema" id="targetSchema">
-                <option value="">-- Select Schema --</option>
-            </select>
-      </td>      
-    </tr>
-    <tr>      
-      <!-- <td>Please select Table:
-      		<select name="" id="table">
-                <option value="">-- Select Table --</option>
-            </select>
-      </td> -->
-      <td>Please select Table:
-      		<select name="" id="targetTable">
-                <option value="">-- Select Table --</option>
-            </select>
-      </td>      
-    </tr>      
-     
-     <tr id="targetColumn">      
-      <%-- <td id="sourceColumn">Please select Column:
-      		Source Column  ${schemas}
-      </td> --%>
-      <td id="targetColumntd"><b> Please select Target Column</b>
-      </td>      
-    </tr>    
-     
-  </tbody>
-  </table>
-  </div>
-  </div>
-  <button type="button" class="btn btn-primary" style="margin-left:750px;" onclick="submitData()">Primary</button>
-</form:form>
-
- <!-- Optional JavaScript -->
+</nav>
+<br>
+<div class="container-fluid">
+	      <table class="table" cellspacing="0">
+               <thead>
+                   <tr>
+                       <th>Database</th>
+                       <th>Test Connection</th>
+                       <th>Schema</th>
+                       <th>Table</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   <tr>
+                       <td>
+                       	<select  name="sourceDatabase" id="sourceDatabase" class="form-control">
+						    <option value="">-- Source Database --</option>
+						    <option value="oracle">Oracle</option>
+						    <option value="mysql">MySQL</option>
+						    <option value="sqlserver">SQL Server</option>
+						</select>
+                       </td>
+                       <td>
+                       	<a href="#" class="btn btn-success btn-sm" onclick="testSourceConnection()"><i class="fa fa-database"></i> Source</a>
+                       </td>
+                       <td>
+                       	<select  name="sourceSchema" id="schema" class="form-control">
+						    <option value="">-- Select Schema --</option>
+						</select>
+                       </td>
+                       <td>
+                       	<select name="" id="table" class="form-control">
+						    <option value="">-- Select Table --</option>
+						</select>
+                       </td>
+                   </tr>
+                   <tr>
+                       <td> 
+                       	<select  name="targetDatabase" id="targetDatabase" class="form-control">
+						    <option value="">-- Target Database --</option>
+						    <option value="oracle">Oracle</option>
+						    <option value="mysql">MySQL</option>
+						    <option value="sqlserver">SQL Server</option>
+						</select>
+                       
+                       </td>
+                       <td>
+                       	<a href="#" class="btn btn-success btn-sm" onclick="testDestinationConnection()"><i class="fa fa-database"></i> Target</a>
+                       </td>
+                       <td>
+                       	<select name="targetSchema" id="targetSchema" class="form-control">
+						    <option value="">-- Select Schema --</option>
+						</select>
+                       </td>
+                       <td>
+                       	<select name="" id="targetTable" class="form-control">
+						    <option value="">-- Select Table --</option>
+						</select>
+                       </td>
+                   </tr>
+               </tbody>
+           </table>
+		    <div class="row">
+			  	<div class="col-lg-2" style="text-align: left;">
+			  		<button id="createMapping"  style="display: none;" type="button" class="btn btn-success" onclick="createMapping()">Create Mapping</button>
+			  	</div>
+			  	<div class="col-lg-10" style="text-align: right;">
+			  		<button type="button" class="btn btn-primary" onclick="loadFields()">Load Fields</button>
+			  		<button type="button" class="btn btn-danger" onclick="resetFields()">Reset</button>
+			  	</div>
+			 </div>
+			 <br/>
+			 <table id="mappingTable" class="table" cellspacing="0" style="display: none;">
+	               <thead>
+	                   <tr>
+	                       <th colspan="4">Fields</th>
+	                   </tr>
+	               </thead>
+	                <thead>
+	                   <tr>
+	                       <th colspan="2" style="text-align: center;">Source</th>
+	                       <th colspan="2" style="text-align: center;">Destination</th>
+	                   </tr>
+	               </thead>
+	               <tbody>
+	                   <tr>
+	                   		<td colspan="2" width="50%" style="padding: 0px;"><table class="table table-bordered table-hover" id="mySoureTable" ></table></td>
+	                   		<td colspan="2" width="50%" style="padding: 0px;"><table class="table table-bordered table-hover" id="myTargetTable" ></table></td>
+	                   </tr>
+	               </tbody>
+	            </table> 
+		</div>
+	
+	<!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   
   	<script>
+  	$(document).ready(function(){
+	    document.getElementById('schema').disabled = true;
+        document.getElementById('table').disabled = true ;
+        document.getElementById('targetSchema').disabled = true;
+        document.getElementById('targetTable').disabled = true;
+	});
   	
-	
-	 $(document).ready(function(){
-		var schemaData = $.ajax({
-	    type: 'GET',       
-	    url: "http://localhost:8080/smartdata/getSourceFields/sql",	    
-	    dataType: 'json',
-	    context: document.body,
-	    global: false,
-	    async:false,
-	    success: function(data) {
-	        return data;
-	    }
-	}).responseText;
-	
-	console.log(schemaData);
-	const selectSchema = document.getElementById('schema'),
-        selectTable = document.getElementById('table'),
-        
-        selects = document.querySelectorAll('select')
-
-        selectTable.disabled = true        
-
-        selects.forEach(select => {
-            if(select.disabled == true){
-                select.style.cursor = "auto"
-            }
-            else{
-                select.style.cursor = "pointer"
-            }
-        })
-        
-        schemaData = JSON.parse(schemaData);
-		schemaData.forEach(function(element){		    
-		    selectSchema.options[selectSchema.options.length] = new Option(element.schemaName, element.schemaName);
-		});
-        
-       selectSchema.onchange = (e) =>{            
-            selectTable.disabled = false;
-            
-            schemaData.forEach(function(element){	    
-		    var tableNames = element.tables;		    
-		    tableNames.forEach(function(element){		    	
-		    	selectTable.options[selectTable.options.length] = new Option(element.name, element.name);
-		    });		    
-		    
-		});       
-       }
-       
-       selectTable.onchange = (e) =>{       
-        console.log("element = "+e.target.value);                
-            schemaData.forEach(function(element){	    
-		    var tableNames = element.tables;
-		    //console.log("tableNames = "+tableNames);		    
-		    tableNames.forEach(function(element){
-		    	//console.log("table name = "+element.name);
-		    	if(e.target.value == element.name){
-			    	var tableColumns = element.columns;
-			    	
-			    	tableColumns.forEach(function(element){
-			    		console.log("column name = "+element.name);
-			    		var table = document.getElementById("myTable");
-			    		var row = table.insertRow(-1);
-			    		row.id = 'id_'+element.name;
-			    		var cell = row.insertCell(0);
-			    		
-			    		//$("td:sourceColumn").append("stuff you want to append");
-			    		//$("#sourceColumn").text("Was empty");
-						//var cell1 = row.insertCell(1);
-			    		cell.innerText = element.name;
-			    		//cell1.className="thirdRowCell";
-			    	});
-		    	}
-		    });		    
-		    
-		});       
-       }
-       
-        
-	
-	});
-	
-	//Target details
-	
- 	$(document).ready(function(){
-		var schemaTargetData = $.ajax({
-	    type: 'GET',       
-	    url: "http://localhost:8080/smartdata/getTargetFields/sql",	    
-	    dataType: 'json',
-	    context: document.body,
-	    global: false,
-	    async:false,
-	    success: function(data) {
-	        return data;
-	    }
-	}).responseText;
-	
-	console.log(schemaTargetData);
-	const selectTargetSchema = document.getElementById('targetSchema'),
-        selectTargetTable = document.getElementById('targetTable'),
-        
-        selects = document.querySelectorAll('select')
-
-        selectTargetTable.disabled = true        
-
-        selects.forEach(select => {
-            if(select.disabled == true){
-                select.style.cursor = "auto"
-            }
-            else{
-                select.style.cursor = "pointer"
-            }
-        })
-        
-        schemaTargetData = JSON.parse(schemaTargetData);
-		schemaTargetData.forEach(function(element){		    
-		    selectTargetSchema.options[selectTargetSchema.options.length] = new Option(element.schemaName, element.schemaName);
-		});
-        
-       selectTargetSchema.onchange = (e) =>{            
-            selectTargetTable.disabled = false;
-            
-            schemaTargetData.forEach(function(element){	    
-		    var tableNames = element.tables;		    
-		    tableNames.forEach(function(element){		    	
-		    	selectTargetTable.options[selectTargetTable.options.length] = new Option(element.name, element.name);
-		    });		    
-		    
-		});       
-       }
-       
-       selectTargetTable.onchange = (e) =>{       
-        console.log("element = "+e.target.value);                
-            schemaTargetData.forEach(function(element){	    
-		    var tableNames = element.tables;
-		    //console.log("tableNames = "+tableNames);		    
-		    tableNames.forEach(function(element){
-		    	//console.log("table name = "+element.name);
-		    	if(e.target.value == element.name){
-			    	var tableColumns = element.columns;
-			    	var columns = [];
-			    	tableColumns.forEach(function(element){
-			    	   console.log("column name = "+element.name);
-			    		var table = document.getElementById("myTargetTable");
-			    		var row = table.insertRow(-1);
-			    		var cell = row.insertCell(0);
-			    		//cell.innerText = element.name; 
-			    		//$("#targetColumn").text("Was empty");
-			    		//cell.innerText = element.name;
-			    		row.id = 'id_'+element.name;
-			    		cell.id = 'td_'+element.name;
-			    		cell.className="ttthirdRowCell";
-			    		$(".ttthirdRowCell").html('<select name="'+element.name+'" class="targetTableFields"><option value="">-- Select Field --</option></select>');
-			    		columns.push(element.name);	
-			    		
-			    	});
-			    	
-			    	
-		    		
-			    	//var targetColumns = document.getElementByClassName('targetTableFields');
-			    	columns.forEach(function(element){	
-			    		//console.log("column = "+element);
-			    		//$(".targetTableFields").options[$(".targetTableFields").options.length] = new Option(element, element);
-			    		
-			    		$('.targetTableFields').append(new Option(element, element))
-			    	});	
-			    	// Remove the third row
-			    	$('td#td_LAST_NAME').find('select').find('option[value]').remove();
-
-			       // $('td#td_LAST_NAME').remove();
-		    	}
-		    });		    
-		    
-		});       
-       }
-       
-	});
- 
- 	function submitData(){
-		console.log("calling function..."+$("#myTargetTable").find("tr"));
+ 	function Column(schema, table, name, dataType, length,t_schema, t_table, t_name, t_dataType, t_length) {
+		this.schema = schema;
+		this.table = table;
+		this.name = name;
+		this.dataType = dataType;
+		this.length = length;
 		
-		var $row = $(this).closest('table').children('tr:first');
-		$tds = $row.find("td");             
-		//console.log("calling function..."+$row.find("td").value);
-		$.each($tds, function() {              
-		    console.log($(this).text());        
-		});
+		this.t_schema = t_schema;
+		this.t_table = t_table;
+		this.t_name = t_name;
+		this.t_dataType = t_dataType;
+		this.t_length = t_length;
+	}
+	
+ 	function loadFields(){
+        var sourceDatabase = $('#sourceDatabase').val();
+        var schema = $('#schema').val();
+        var table = $('#table').val();
+        
+        var targetDatabase = $('#targetDatabase').val();
+        var targetSchema = $('#targetSchema').val();
+        var targetTable = $('#targetTable').val();
+        
+        if(sourceDatabase == ''){
+        	alert('Select Source database');
+        	$('#sourceDatabase').focus();
+        	return false;
+        } else if(schema == ''){
+        	alert('Select Source schema');
+        	$('#schema').focus();
+        	return false;
+        }else if(table == ''){
+        	alert('Select Source table');
+        	$('#table').focus();
+        	return false;
+        } else if(targetDatabase == ''){
+        	alert('Select Target database');
+        	$('#targetDatabase').focus();
+        	return false;
+        } else if(targetSchema == ''){
+        	alert('Select Target schema');
+        	$('#targetSchema').focus();
+        	return false;
+        }else if(targetTable == ''){
+        	alert('Select Target table');
+        	$('#targetTable').focus();
+        	return false;
+        }
+ 		
+ 		$('#mappingTable').show();
+ 		$('#createMapping').show();
+ 		
+ 		var totalSourceRows = $('#mySoureTable tr').length;
+ 		var totalDestinationRows = $('#myTargetTable tr').length;
 		
-		/* var $row = $('#myTable').closest("tr"),       // Finds the closest row <tr> 
-	    $tds = $row.find("td");             // Finds all children <td> elements
+		var total = totalSourceRows;
+		while(total != totalDestinationRows){
+			total -- ;
+			document.getElementById("mySoureTable").deleteRow(total);
+		}
+ 		
+        document.getElementById('sourceDatabase').disabled = true;
+        document.getElementById('schema').disabled = true;
+        document.getElementById('table').disabled = true ;
+        
+        document.getElementById('targetDatabase').disabled = true;
+        document.getElementById('targetSchema').disabled = true;
+        document.getElementById('targetTable').disabled = true;
+ 	}
+ 	
+ 	function resetFields(){
+ 		$('#mappingTable').hide();
+ 		$('#createMapping').hide();
+ 		
+ 		$("#mySoureTable").empty();
+        $('#myTargetTable').empty();
+        
+ 		$('#targetSchema').val('');
+	    $('#targetTable').val('');
+		$('#schema').val('');
+	    $('#table').val('');
 
-		$.each($tds, function() {               // Visits every single <td> element
-		    console.log($(this).text());        // Prints out the text within the <td>
-		}); */
+        document.getElementById('table').disabled = true 
+        document.getElementById('targetTable').disabled = true
+        
+        //document.getElementById('sourceDatabase').disabled = false;
+        document.getElementById('schema').disabled = false;
+        
+       // document.getElementById('targetDatabase').disabled = false;
+        document.getElementById('targetSchema').disabled = false;
+        
+ 	}
+ 	
+ 	function createMapping(){
+ 		var totalSourceRows = $('#mySoureTable tr').length;
+ 		var totalDestinationRows = $('#myTargetTable tr').length;
+		var arr = [];
+		
+ 		$('#myTargetTable tr').each(function(row) {
+ 		    var rowTRID = $(this).closest('tr').attr('id')
+ 		    var rowSplit = rowTRID.split('::');
+ 		    
+ 		    var sourceID = rowSplit[0]+'_s';
+ 		    var destinationID = rowSplit[0]+'_t';
+ 		   
+ 		    var sorValue = $('#'+sourceID).find(":selected").val();
+ 		    var tarValue = $('#'+destinationID).find(":selected").val();
+ 		    
+ 		    var sorSplit = sorValue.split('::');
+ 		    var tarSplit = tarValue.split('::');
+		    
+ 		  
+ 		    var destinationSchema = $('#targetSchema').find(":selected").val();
+		    var destinationTable = $('#targetTable').find(":selected").val();
+		    var destinationName = tarSplit[0];
+		    var destinationType = tarSplit[2];
+		    var destinationLength = tarSplit[1];
+ 		   	
+ 		    var sourceSchema = $('#schema').find(":selected").val();
+ 		    var sourceTable = $('#table').find(":selected").val();
+ 		    var sourceName = sorSplit[0];
+ 		    var sourceType = sorSplit[2];
+		    var sourceLength = sorSplit[1];
+		    
+ 			var data = new Column(sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
+ 			arr.push(data);
+ 		});
+
+ 		console.log(arr);
+ 		
+ 		$.ajaxSetup({
+ 			async : false
+ 		});
+ 		
+ 		$.ajax({
+ 			url: "http://localhost:8080/smartdata/createMapping",	   
+ 			type : "POST",
+ 			contentType: "application/json",
+    		data: JSON.stringify(arr),
+ 			success : function(result) {
+				//handle api output
+			}
+			
+		});
+ 		$.ajaxSetup({
+ 			async : true
+ 		});
+ 		
+ 		
 	}
 
+ 	function testSourceConnection(){
+ 		var sourceDatabase = $('#sourceDatabase').val();
+
+ 		if(sourceDatabase ==''){
+ 			alert('Select Source database');
+        	$('#sourceDatabase').focus();
+        	return false;
+ 		}
+ 		
+ 		var schemaData = $.ajax({
+ 		    type: 'GET',       
+ 		    url: "http://localhost:8080/smartdata/getSourceFields/"+sourceDatabase,	    
+ 		    dataType: 'json',
+ 		    context: document.body,
+ 		    global: false,
+ 		    async:false,
+ 		    success: function(data) {
+ 		    	alert('Connection successfull');
+ 		       	document.getElementById('sourceDatabase').disabled = true;
+ 		        return data;
+ 		    },
+			error : function(xhr, ajaxOptions, thrownError) {
+				alert('Unable to Connect.');
+			}
+ 		}).responseText;
+ 		
+ 		document.getElementById('schema').disabled = false;
+ 		
+ 		$('#schema').empty();
+ 		
+ 		const selectSchema = document.getElementById('schema'),
+ 	        selectTable = document.getElementById('table'),
+ 	        
+ 	        selects = document.querySelectorAll('select')
+
+ 	        selectTable.disabled = true        
+
+ 	        selects.forEach(select => {
+ 	            if(select.disabled == true){
+ 	                select.style.cursor = "auto"
+ 	            }
+ 	            else{
+ 	                select.style.cursor = "pointer"
+ 	            }
+ 	        })
+ 	        
+ 	        schemaData = JSON.parse(schemaData);
+ 			selectSchema.options[0] = new Option("-- Select Table --", "");
+ 			schemaData.forEach(function(element){		    
+ 			    selectSchema.options[selectSchema.options.length] = new Option(element.schemaName, element.schemaName);
+ 			});
+ 	        
+ 	       selectSchema.onchange = (e) =>{            
+ 	            selectTable.disabled = false;
+ 	            $('#table').empty();
+ 	            selectTable.options[0] = new Option("-- Select Table --", "");
+ 	            schemaData.forEach(function(element){	    
+ 			    var tableNames = element.tables;		    
+ 			    tableNames.forEach(function(element){		    	
+ 			    	selectTable.options[selectTable.options.length] = new Option(element.name, element.name);
+ 			    });		    
+ 			    
+ 			});       
+ 	       }
+ 	       
+ 	       selectTable.onchange = (e) =>{ 
+ 	    	$("#mySoureTable").empty();
+ 	        console.log("element = "+e.target.value);                
+ 	            schemaData.forEach(function(element){	    
+ 			    var tableNames = element.tables;
+ 			    //console.log("tableNames = "+tableNames);		    
+ 			    tableNames.forEach(function(element){
+ 			    	//console.log("table name = "+element.name);
+ 			    	if(e.target.value == element.name){
+ 				    	var tableColumns = element.columns;
+ 				    	var index = 0;
+ 				    	var columns = [];
+ 				    	tableColumns.forEach(function(element){
+ 				    		console.log("column name = "+element.name);
+ 				    		var table = document.getElementById("mySoureTable");
+ 				    		var row = table.insertRow(-1);
+ 				    		var cell = row.insertCell(0);
+ 				    		
+ 				    		row.id = 'id_'+index+'::s';
+ 				    		cell.className="sourceCell_"+index;
+ 				    		$(".sourceCell_"+index).html('<select id="id_'+index+'_s" class="sourceTableFields form-control"><option value="">-- Select Field --</option></select>');
+ 				    		
+ 				    		var valueData = element.name+'::'+element.length+'::'+element.dataType;
+ 				    		columns.push(valueData);
+ 				    		index ++;
+ 				    	});
+ 				    	
+ 				    	columns.forEach(function(element){	
+ 				    		var value = element;
+ 				    		var key = value.split('::')[0];
+ 				    		
+ 				    		$('.sourceTableFields').append(new Option(key, value))
+ 				    	});
+ 			    	}
+ 			    });		    
+ 			    
+ 			});       
+ 	       }
+ 		
+ 		//$('#errorSourceBody').empty();
+ 		//$('#errorSourceBody').append('<div class="alert alert-danger" role="alert">Unable to connect to source database.</div>');
+ 	}
+ 	
+ 	function testDestinationConnection(){
+        document.getElementById('targetSchema').disabled = false;
+        
+        var targetDatabase = $('#targetDatabase').val();
+
+ 		if(targetDatabase ==''){
+ 			alert('Select Target database');
+        	$('#targetDatabase').focus();
+        	return false;
+ 		}
+        
+        var schemaTargetData = $.ajax({
+ 		    type: 'GET',       
+ 		    url: "http://localhost:8080/smartdata/getTargetFields/"+targetDatabase,	    
+ 		    dataType: 'json',
+ 		    context: document.body,
+ 		    global: false,
+ 		    async:false,
+ 		    success: function(data) {
+ 		    	alert('Connection successfull');
+ 		        document.getElementById('targetDatabase').disabled = true;
+ 		        return data;
+ 		    },
+			error : function(xhr, ajaxOptions, thrownError) {
+				alert('Unable to Connect.');
+			}
+ 		}).responseText;
+ 		
+        $('#targetSchema').empty();
+        
+ 		//console.log(schemaTargetData);
+ 		const selectTargetSchema = document.getElementById('targetSchema'),
+ 	        selectTargetTable = document.getElementById('targetTable'),
+ 	        
+ 	        selects = document.querySelectorAll('select')
+
+ 	        selectTargetTable.disabled = true        
+
+ 	        selects.forEach(select => {
+ 	            if(select.disabled == true){
+ 	                select.style.cursor = "auto"
+ 	            }
+ 	            else{
+ 	                select.style.cursor = "pointer"
+ 	            }
+ 	        })
+ 	        
+ 	        schemaTargetData = JSON.parse(schemaTargetData);
+ 			selectTargetSchema.options[0] = new Option("-- Select Table --", "");
+ 			schemaTargetData.forEach(function(element){		    
+ 			    selectTargetSchema.options[selectTargetSchema.options.length] = new Option(element.schemaName, element.schemaName);
+ 			});
+ 	        
+ 	       selectTargetSchema.onchange = (e) =>{   
+ 	    	   
+ 	            selectTargetTable.disabled = false;
+ 	            $('#targetTable').empty();
+ 	            selectTargetTable.options[0] = new Option("-- Select Table --", "");
+ 	            
+ 	            schemaTargetData.forEach(function(element){	    
+ 			    var tableNames = element.tables;		    
+ 			    tableNames.forEach(function(element){		    	
+ 			    	selectTargetTable.options[selectTargetTable.options.length] = new Option(element.name, element.name);
+ 			    });		    
+ 			    
+ 			});       
+ 	       }
+ 	       
+ 	       selectTargetTable.onchange = (e) =>{       
+ 	    	  $("#myTargetTable").empty();
+ 	        console.log("element = "+e.target.value);                
+ 	            schemaTargetData.forEach(function(element){	    
+ 			    var tableNames = element.tables;
+ 			    //console.log("tableNames = "+tableNames);		    
+ 			    tableNames.forEach(function(element){
+ 			    	//console.log("table name = "+element);
+ 			    	if(e.target.value == element.name){
+ 				    	var tableColumns = element.columns;
+ 				    	var columns = [];
+ 				    	var index = 0 ;
+ 				    	tableColumns.forEach(function(element){
+ 				    	   console.log("column name = "+element.name);
+ 				    		var table = document.getElementById("myTargetTable");
+ 				    		var row = table.insertRow(-1);
+ 				    		var cell = row.insertCell(0);
+ 				    		//cell.innerText = element.name; 
+ 				    		//$("#targetColumn").text("Was empty");
+ 				    		//cell.innerText = element.name;
+ 				    		row.id = 'id_'+index+"::t";
+ 				    		cell.className="ttthirdRowCell_"+index
+ 				    		$(".ttthirdRowCell_"+index).html('<select id="id_'+index+'_t" class="targetTableFields form-control"><option value="">-- Select Field --</option></select>');
+ 				    		
+ 				    		var valueData = element.name+'::'+element.length+'::'+element.dataType;
+ 				    		columns.push(valueData);
+ 				    		index++;
+ 				    	});
+ 			    		
+ 				    	columns.forEach(function(element){	
+ 				    		var value = element;
+ 				    		var key = value.split('::')[0];
+ 				    		
+ 				    		$('.targetTableFields').append(new Option(key, value))
+ 				    	});	
+ 			    	}
+ 			    });		    
+ 			});       
+ 	       } 		
+ 		//$('#errorDestinationBody').empty();
+ 		//$('#errorDestinationBody').append('<div class="alert alert-danger" role="alert">Unable to connect to destination database.</div>');
+ 		
+ 	}
   	</script>
 </body>
 </html>
