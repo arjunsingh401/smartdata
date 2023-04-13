@@ -171,6 +171,17 @@ height: 65px;
 	            </table> 
 		</div>
 	
+	<div id="loadingModal" class="modal fade" role="dialog" style="top: 35%;" data-backdrop="true">
+		<div class="modal-dialog" style="width: 10%">
+			<div class="modal-content" style="border: 0px;">
+				<div class="modal-body">
+					<img alt="" src="${pageContext.request.contextPath}/loading3.gif" height="70px" width="70px">
+					<h4>Loading...</h4>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -287,27 +298,23 @@ height: 65px;
  		    var rowTRID = $(this).closest('tr').attr('id')
  		    var rowSplit = rowTRID.split('::');
  		    
- 		    var sourceID = rowSplit[0]+'_s';
- 		    var destinationID = rowSplit[0]+'_t';
+ 		    var sourceID = rowSplit[0]+'_sname';
+ 		    var destinationID = rowSplit[0]+'_tname';
  		   
  		    var sorValue = $('#'+sourceID).find(":selected").val();
  		    var tarValue = $('#'+destinationID).find(":selected").val();
- 		    
- 		    var sorSplit = sorValue.split('::');
- 		    var tarSplit = tarValue.split('::');
-		    
  		  
  		    var destinationSchema = $('#targetSchema').find(":selected").val();
 		    var destinationTable = $('#targetTable').find(":selected").val();
-		    var destinationName = tarSplit[0];
-		    var destinationType = tarSplit[2];
-		    var destinationLength = tarSplit[1];
+		    var destinationName = sorValue;
+		    var destinationType = $('#id_'+row+'_sdataType').val();
+		    var destinationLength = $('#id_'+row+'_slength').val();
  		   	
  		    var sourceSchema = $('#schema').find(":selected").val();
  		    var sourceTable = $('#table').find(":selected").val();
- 		    var sourceName = sorSplit[0];
- 		    var sourceType = sorSplit[2];
-		    var sourceLength = sorSplit[1];
+ 		    var sourceName = tarValue;
+ 		    var sourceType =  $('#id_'+row+'_tdataType').val();
+		    var sourceLength = $('#id_'+row+'_tlength').val();
 		    
  			var data = new Column(sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
  			arr.push(data);
@@ -335,8 +342,14 @@ height: 65px;
  		
  		
 	}
-
  	function testSourceConnection(){
+ 		$('#loadingModal').modal('show');
+ 		setTimeout(function(){
+ 			sourceConnection();
+ 		}, 2000);
+ 	}
+ 	
+ 	function sourceConnection(){
  		var sourceDatabase = $('#sourceDatabase').val();
 
  		if(sourceDatabase ==''){
@@ -353,11 +366,13 @@ height: 65px;
  		    global: false,
  		    async:false,
  		    success: function(data) {
+ 		    	$('#loadingModal').modal('hide');
  		    	alert('Source connection successfull');
  		       	document.getElementById('sourceDatabase').disabled = true;
  		        return data;
  		    },
 			error : function(xhr, ajaxOptions, thrownError) {
+				$('#loadingModal').modal('hide');
 				alert('Unable to Connect Source DB.');
 			}
  		}).responseText;
@@ -421,18 +436,17 @@ height: 65px;
  				    		
  				    		row.id = 'id_'+index+'::s';
  				    		cell.className="sourceCell_"+index;
- 				    		$(".sourceCell_"+index).html('<select id="id_'+index+'_s" class="sourceTableFields form-control"><option value="">-- Select Field --</option></select>');
  				    		
- 				    		var valueData = element.name+'::'+element.length+'::'+element.dataType;
- 				    		columns.push(valueData);
+ 				    		var content = '<select id="id_'+index+'_sname" class="sourceTableFields form-control"><option value="">-- Select Field --</option></select>';
+ 				    		content = content +'<input type="hidden" id="id_'+index+'_sdataType" value="'+element.dataType+'">';
+ 				    		content = content +'<input type="hidden" id="id_'+index+'_slength"  value="'+element.length+'">';
+ 				    		$(".sourceCell_"+index).html(content);
+ 				    		columns.push(element.name);
  				    		index ++;
  				    	});
  				    	
  				    	columns.forEach(function(element){	
- 				    		var value = element;
- 				    		var key = value.split('::')[0];
- 				    		
- 				    		$('.sourceTableFields').append(new Option(key, value))
+ 				    		$('.sourceTableFields').append(new Option(element, element))
  				    	});
  			    	}
  			    });		    
@@ -443,8 +457,15 @@ height: 65px;
  		//$('#errorSourceBody').empty();
  		//$('#errorSourceBody').append('<div class="alert alert-danger" role="alert">Unable to connect to source database.</div>');
  	}
- 	
  	function testDestinationConnection(){
+ 		$('#loadingModal').modal('show');
+ 		setTimeout(function(){
+ 			targetConnection();
+ 		}, 2000);
+ 	}
+
+ 	
+ 	function targetConnection(){
         document.getElementById('targetSchema').disabled = false;
         
         var targetDatabase = $('#targetDatabase').val();
@@ -463,11 +484,13 @@ height: 65px;
  		    global: false,
  		    async:false,
  		    success: function(data) {
+ 		    	$('#loadingModal').modal('hide');
  		    	alert('Target Connection successfull');
  		        document.getElementById('targetDatabase').disabled = true;
  		        return data;
  		    },
 			error : function(xhr, ajaxOptions, thrownError) {
+				$('#loadingModal').modal('hide');
 				alert('Unable to Connect Target DB.');
 			}
  		}).responseText;
@@ -534,18 +557,17 @@ height: 65px;
  				    		//cell.innerText = element.name;
  				    		row.id = 'id_'+index+"::t";
  				    		cell.className="ttthirdRowCell_"+index
- 				    		$(".ttthirdRowCell_"+index).html('<select id="id_'+index+'_t" class="targetTableFields form-control"><option value="">-- Select Field --</option></select>');
  				    		
- 				    		var valueData = element.name+'::'+element.length+'::'+element.dataType;
- 				    		columns.push(valueData);
+ 				    		var content = '<select id="id_'+index+'_t" class="targetTableFields form-control"><option value="">-- Select Field --</option></select>';
+ 				    		content = content +'<input type="hidden" id="id_'+index+'_tdataType" value="'+element.dataType+'">';
+ 				    		content = content +'<input type="hidden" id="id_'+index+'_tlength"  value="'+element.length+'">';
+ 				    		$(".ttthirdRowCell_"+index).html(content);
+ 				    		columns.push(element.name);
  				    		index++;
  				    	});
  			    		
  				    	columns.forEach(function(element){	
- 				    		var value = element;
- 				    		var key = value.split('::')[0];
- 				    		
- 				    		$('.targetTableFields').append(new Option(key, value))
+ 				    		$('.targetTableFields').append(new Option(element, element))
  				    	});	
  			    	}
  			    });		    
