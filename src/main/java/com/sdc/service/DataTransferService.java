@@ -1,5 +1,8 @@
 package com.sdc.service;
 
+import com.sdc.model.MappingData;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -7,5 +10,5 @@ import java.util.Map;
  * Author: Koushik
 */
 public interface DataTransferService {
-    void startDataTransfer(String table1, String table2, Map<String, String> fieldMapping);
+    void startDataTransfer(List<MappingData> mappingData);
 }
