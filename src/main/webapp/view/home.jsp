@@ -84,7 +84,7 @@ height: 65px;
 	      <table class="table" cellspacing="0">
                <thead>
                    <tr>
-                       <th>Database</th>
+                       <th>Database </th>
                        <th>Test Connection</th>
                        <th>Schema</th>
                        <th>Table</th>
@@ -141,15 +141,17 @@ height: 65px;
                </tbody>
            </table>
 		    <div class="row">
-			  	<div class="col-lg-2" style="text-align: left;">
+			  	<!-- <div class="col-lg-2" style="text-align: right;">
 			  		<button id="createMapping"  style="display: none;" type="button" class="btn btn-success" onclick="createMapping()">Create Mapping</button>
-			  	</div>
+			  	</div> -->
 			  	<div class="col-lg-2" style="text-align: left;">
                 	<button id="transfer"  style="display: none;" type="button" class="btn btn-success" onclick="transfer()">Start Transfer</button>
                 </div>
 			  	<div class="col-lg-8" style="text-align: right;">
+			  	
 			  		<button type="button" class="btn btn-primary" onclick="loadFields()">Load Fields</button>
 			  		<button type="button" class="btn btn-danger" onclick="resetFields()">Reset</button>
+			  		<button id="createMapping"  style="display: none;" type="button" class="btn btn-success" onclick="createMapping()">Create Mapping</button>
 			  	</div>
 			 </div>
 			 <br/>
@@ -175,11 +177,11 @@ height: 65px;
 		</div>
 	
 	<div id="loadingModal" class="modal fade" role="dialog" style="top: 35%;" data-backdrop="true">
-		<div class="modal-dialog" style="width: 10%">
+		<div class="modal-dialog" style="width: 5%">
 			<div class="modal-content" style="border: 0px;">
 				<div class="modal-body">
-					<img alt="" src="${pageContext.request.contextPath}/loading3.gif" height="70px" width="70px">
-					<h4>Loading...</h4>
+					<img alt="" src="${pageContext.request.contextPath}/loading3.gif" height="40px" width="40px">
+					<!-- <h4>Loading...</h4> -->
 				</div>
 			</div>
 		</div>
@@ -199,8 +201,9 @@ height: 65px;
         document.getElementById('targetTable').disabled = true;
 	});
   	
- 	function Column(schema, table, name, dataType, length,t_schema, t_table, t_name, t_dataType, t_length) {
-		this.schema = schema;
+ 	function Column(userId,schema, table, name, dataType, length,t_schema, t_table, t_name, t_dataType, t_length) {
+		this.userId=userId;
+ 		this.schema = schema;
 		this.table = table;
 		this.name = name;
 		this.dataType = dataType;
@@ -298,7 +301,7 @@ height: 65px;
  		var totalSourceRows = $('#mySoureTable tr').length;
  		var totalDestinationRows = $('#myTargetTable tr').length;
 		var arr = [];
-		
+		var userId=${loginForm.userId};
  		$('#myTargetTable tr').each(function(row) {
  		    var rowTRID = $(this).closest('tr').attr('id')
  		    var rowSplit = rowTRID.split('::');
@@ -321,7 +324,7 @@ height: 65px;
  		    var sourceType =  $('#id_'+row+'_sdataType').val();
 		    var sourceLength = $('#id_'+row+'_slength').val();
 		    
- 			var data = new Column(sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
+ 			var data = new Column(userId,sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
  			arr.push(data);
  		});
 
@@ -352,7 +355,8 @@ height: 65px;
         var totalSourceRows = $('#mySoureTable tr').length;
         var totalDestinationRows = $('#myTargetTable tr').length;
         var arr = [];
-
+		var userId=${loginForm.userId};
+       
         $('#myTargetTable tr').each(function(row) {
             var rowTRID = $(this).closest('tr').attr('id')
             var rowSplit = rowTRID.split('::');
@@ -374,8 +378,8 @@ height: 65px;
             var sourceName = sorValue;
             var sourceType =  $('#id_'+row+'_sdataType').val();
             var sourceLength = $('#id_'+row+'_slength').val();
-
-            var data = new Column(sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
+			
+            var data = new Column(userId,sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
             arr.push(data);
         });
 
@@ -392,6 +396,7 @@ height: 65px;
             data: JSON.stringify(arr),
             success : function(result) {
                 //handle api output
+                alert(result);
             }
 
         });

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class DataTransferController {
@@ -27,6 +26,6 @@ public class DataTransferController {
 
         dataTransferService.startDataTransfer(mappingData);
 
-        return "Data transfer started successfully";
+        return "Data transfered successfully";
     }
 }

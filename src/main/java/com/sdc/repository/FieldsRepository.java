@@ -3,10 +3,15 @@
  */
 package com.sdc.repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,10 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.sdc.model.Column;
+import com.sdc.model.MappingData;
 import com.sdc.model.Schema;
 import com.sdc.model.Table;
 
@@ -37,6 +46,10 @@ public class FieldsRepository {
 	 @Autowired
 	 @Qualifier("jdbcTemplate2")
 	 private JdbcTemplate jdbcTemplate2;
+	 
+	 @Autowired
+	 @Qualifier("jdbcTemplate3")
+	 private JdbcTemplate jdbcTemplate3;
 	 
 	 public List<Schema> getSourceFields(String source) {
 		 	String sql ="SELECT name AS schema_name,  schema_id FROM sys.schemas ORDER BY name ";
@@ -206,4 +219,76 @@ public class FieldsRepository {
 			}
 			return columns;
 		}
+	 
+	 public int saveMappingData(List<MappingData> mappingData) {
+		 StringBuilder sourceFields = new StringBuilder();
+		 StringBuilder targetFields = new StringBuilder();
+		 Map<String, String> map = new HashMap<String, String>();
+		 int i=0;
+		 for(MappingData data : mappingData) {
+			 if(i==0) {
+				 map.put("sourceSchema", data.getSchema());
+				 map.put("sourceTable", data.getTable());
+				 map.put("targetSchema", data.getT_schema());
+				 map.put("targetTable", data.getT_table());
+				 map.put("userId", data.getUserId());
+			 }
+			 logger.info("sourceFields length  : "+sourceFields.length());
+				 if(data.getName()!=null && !data.getName().equalsIgnoreCase("") && sourceFields.length()<=0){
+				 sourceFields.append(data.getName());
+				 }else if(data.getName()!=null && !data.getName().equalsIgnoreCase("") && sourceFields.length()>0){
+				 sourceFields.append(",").append(data.getName());
+				 }
+				  
+				 if(data.getT_name()!=null && !data.getT_name().equalsIgnoreCase("") && targetFields.length()<=0){
+				 targetFields.append(data.getT_name());
+				 }else if(data.getT_name()!=null && !data.getT_name().equalsIgnoreCase("") && targetFields.length()>=0){
+				 targetFields.append(",").append(data.getT_name());	 
+				 }
+				 
+				//}
+				 /*
+					 * else { if(data.getName()!=null && !data.getName().equalsIgnoreCase("") &&
+					 * sourceFields.length()>0){ sourceFields.append(",").append(data.getName()); }
+					 * if(data.getT_name()!=null && !data.getT_name().equalsIgnoreCase("") &&
+					 * targetFields.length()>0){ targetFields.append(",").append(data.getT_name());
+					 * } }
+					 */
+			 i++;
+		 }
+		 String sql="INSERT INTO MAPPING_FIELDS (NAME, DESCRIPTION, SOURCE_SCHEMA_NAME, SOURCE_TABLE_NAME, SOURCE_FIELDS, TARGET_SCHEMA_NAME, TARGET_TABLE_NAME, TARGET_FIELDS, CREATED_BY, CREATED, UPDATED_BY, UPDATED) "
+		 		+ "VALUES ('"+map.get("sourceSchema")+" TO "+map.get("targetSchema")+"', '"+map.get("sourceSchema")+"."+map.get("sourceTable")+" TO "+map.get("targetSchema")+"."+map.get("targetTable")+"', '"+map.get("sourceSchema")+"', '"+map.get("sourceTable")+"', '"+sourceFields.toString()+"', '"+map.get("targetSchema")+"', '"+map.get("targetTable")+"', '"+targetFields+"', "+map.get("userId")+", CURRENT_TIMESTAMP, "+map.get("userId")+", CURRENT_TIMESTAMP)";
+		 logger.info("sql : "+sql);
+		//int id = jdbcTemplate3.update(sql);
+		//logger.info("id : "+id);
+		 KeyHolder keyHolder = new GeneratedKeyHolder();
+			/*
+			 * jdbcTemplate3.update(new PreparedStatementCreator() { public
+			 * PreparedStatement createPreparedStatement(Connection connection) throws
+			 * SQLException { return connection.prepareStatement(sql, new String[] {"id"});
+			 * } }, keyHolder);
+			 */
+		 jdbcTemplate3.update(connection -> {
+			    PreparedStatement ps = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			    return ps;
+			}, keyHolder);
+				return keyHolder.getKey().intValue();
+	 }
+
+	 public int saveJob(int mappingId,int userId,int totalRows,int totalTime,int pendingRows,int pendingTime) {
+		 
+		 String sql="INSERT INTO JOBS (MAPPING_ID, NAME, DESCRIPTION, TOTAL_ROWS, TOTAL_TIME, PENDING_ROWS, PENDING_TIME, CREATED_BY, CREATED, UPDATED_BY, UPDATED) "		 		
+		 		+ " VALUES ("+mappingId+", null, null, "+totalRows+", "+totalTime+", "+pendingRows+", "+pendingTime+", "+userId+", CURRENT_TIMESTAMP, "+userId+", CURRENT_TIMESTAMP) ";
+		 logger.info("sql : "+sql);
+		 KeyHolder keyHolder = new GeneratedKeyHolder();
+		 try {
+		 jdbcTemplate3.update(connection -> {
+			    PreparedStatement ps = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			    return ps;
+			}, keyHolder);
+		 }catch (Exception e) {
+			logger.error("error ",e);
+		}
+				return keyHolder.getKey().intValue();
+	 }
 }

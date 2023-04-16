@@ -16,6 +16,7 @@ public class MappingData implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private String userId;
 	private String schema;
 	private String table;
 	private String name;
@@ -86,5 +87,11 @@ public class MappingData implements Serializable {
 	}
 	public void setT_length(String t_length) {
 		this.t_length = t_length;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }
