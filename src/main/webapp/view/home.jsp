@@ -144,7 +144,10 @@ height: 65px;
 			  	<div class="col-lg-2" style="text-align: left;">
 			  		<button id="createMapping"  style="display: none;" type="button" class="btn btn-success" onclick="createMapping()">Create Mapping</button>
 			  	</div>
-			  	<div class="col-lg-10" style="text-align: right;">
+			  	<div class="col-lg-2" style="text-align: left;">
+                	<button id="transfer"  style="display: none;" type="button" class="btn btn-success" onclick="transfer()">Start Transfer</button>
+                </div>
+			  	<div class="col-lg-8" style="text-align: right;">
 			  		<button type="button" class="btn btn-primary" onclick="loadFields()">Load Fields</button>
 			  		<button type="button" class="btn btn-danger" onclick="resetFields()">Reset</button>
 			  	</div>
@@ -247,6 +250,7 @@ height: 65px;
  		
  		$('#mappingTable').show();
  		$('#createMapping').show();
+ 		$('#transfer').show();
  		
  		var totalSourceRows = $('#mySoureTable tr').length;
  		var totalDestinationRows = $('#myTargetTable tr').length;
@@ -269,6 +273,7 @@ height: 65px;
  	function resetFields(){
  		$('#mappingTable').hide();
  		$('#createMapping').hide();
+ 		$('#transfer').hide();
  		
  		$("#mySoureTable").empty();
         $('#myTargetTable').empty();
@@ -306,15 +311,15 @@ height: 65px;
  		  
  		    var destinationSchema = $('#targetSchema').find(":selected").val();
 		    var destinationTable = $('#targetTable').find(":selected").val();
-		    var destinationName = sorValue;
-		    var destinationType = $('#id_'+row+'_sdataType').val();
-		    var destinationLength = $('#id_'+row+'_slength').val();
+		    var destinationName = tarValue;
+		    var destinationType = $('#id_'+row+'_tdataType').val();
+		    var destinationLength = $('#id_'+row+'_tlength').val();
  		   	
  		    var sourceSchema = $('#schema').find(":selected").val();
  		    var sourceTable = $('#table').find(":selected").val();
- 		    var sourceName = tarValue;
- 		    var sourceType =  $('#id_'+row+'_tdataType').val();
-		    var sourceLength = $('#id_'+row+'_tlength').val();
+ 		    var sourceName = sorValue;
+ 		    var sourceType =  $('#id_'+row+'_sdataType').val();
+		    var sourceLength = $('#id_'+row+'_slength').val();
 		    
  			var data = new Column(sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
  			arr.push(data);
@@ -342,6 +347,59 @@ height: 65px;
  		
  		
 	}
+
+	function transfer() {
+        var totalSourceRows = $('#mySoureTable tr').length;
+        var totalDestinationRows = $('#myTargetTable tr').length;
+        var arr = [];
+
+        $('#myTargetTable tr').each(function(row) {
+            var rowTRID = $(this).closest('tr').attr('id')
+            var rowSplit = rowTRID.split('::');
+
+            var sourceID = rowSplit[0]+'_sname';
+            var destinationID = rowSplit[0]+'_tname';
+
+            var sorValue = $('#'+sourceID).find(":selected").val();
+            var tarValue = $('#'+destinationID).find(":selected").val();
+
+            var destinationSchema = $('#targetSchema').find(":selected").val();
+            var destinationTable = $('#targetTable').find(":selected").val();
+            var destinationName = tarValue;
+            var destinationType = $('#id_'+row+'_tdataType').val();
+            var destinationLength = $('#id_'+row+'_tlength').val();
+
+            var sourceSchema = $('#schema').find(":selected").val();
+            var sourceTable = $('#table').find(":selected").val();
+            var sourceName = sorValue;
+            var sourceType =  $('#id_'+row+'_sdataType').val();
+            var sourceLength = $('#id_'+row+'_slength').val();
+
+            var data = new Column(sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
+            arr.push(data);
+        });
+
+        console.log(arr);
+
+        $.ajaxSetup({
+            async : false
+        });
+
+        $.ajax({
+            url: "${pageContext.request.contextPath}/startDataTransfer",
+            type : "POST",
+            contentType: "application/json",
+            data: JSON.stringify(arr),
+            success : function(result) {
+                //handle api output
+            }
+
+        });
+        $.ajaxSetup({
+            async : true
+        });
+    }
+
  	function testSourceConnection(){
  		$('#loadingModal').modal('show');
  		setTimeout(function(){
