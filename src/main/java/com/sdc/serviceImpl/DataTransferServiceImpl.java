@@ -83,8 +83,8 @@ public class DataTransferServiceImpl implements DataTransferService {
 		 logger.info("itr length : "+itr.next().length());
 		 */
         for(String col: columns) {
-        	logger.info("index : "+index+" col : "+col);
-            ps.setObject(index, col);
+        	logger.info("index : "+index+" col : "+col+" value : "+argument.get(col));
+            ps.setObject(index, argument.get(col));
             index++;
         }
 		/*
