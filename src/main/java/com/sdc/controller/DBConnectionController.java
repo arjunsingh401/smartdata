@@ -6,12 +6,13 @@ package com.sdc.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,23 +50,29 @@ public class DBConnectionController {
 		logger.info("connections : "+connections.size());
 	
 		modelAndView.addObject("connections",connections);
-		modelAndView.setViewName("dbConnection");  // redirect name means jsp name
+		modelAndView.setViewName("databaselist");  // redirect name means jsp name
 		
 		return modelAndView;
 	}
 	
 	@RequestMapping(value="/getDbConnection/{id}" , method=RequestMethod.GET)
-	public ModelAndView getDbConnection(@PathVariable("id") int id) {
+	public ModelAndView getDbConnection(HttpSession session, HttpServletRequest request, HttpServletResponse response,@PathVariable("id") int id,Model model) {
 		
 		logger.info("Enter getDbConnection "+id);
 		
-		DbConnection connection = dbConnectionService.getDbConnection(id);
-		
-	
-		modelAndView.addObject("connection",connection);
-		modelAndView.setViewName("dbConnection");  // redirect name means jsp name
+		DbConnection list = dbConnectionService.getDbConnection(id);
+		model.addAttribute("connection", list);
+		modelAndView.addObject("connection",list);
+		modelAndView.setViewName("editdatabase");  // redirect name means jsp name
 		
 		return modelAndView;
+	}
+	
+	@RequestMapping(value = "/updateDatabase", method = RequestMethod.POST)
+	public ModelAndView updateUser(HttpSession session, HttpServletRequest request, HttpServletResponse response, @ModelAttribute("connection") DbConnection connection) {
+		String nextPage = "index";
+		ModelAndView modelView = new ModelAndView(nextPage);
+		return modelView;
 	}
 	
 	@RequestMapping(value="/saveDbConnection" , method=RequestMethod.POST)
@@ -79,16 +86,19 @@ public class DBConnectionController {
 		
 		return modelAndView;
 	}
-	@RequestMapping(value="/getDbConnectionNames" , method=RequestMethod.GET)
-	public List<String> getDbConnectionNames() {
-		
-		logger.info("Enter getDbConnectionNames ");
-		
-		List<String> connections = dbConnectionService.getDbConnectionNames();
-		
-		logger.info("connections : "+connections.size());
 	
-		
-		return connections;
+	@RequestMapping(value="/addnNewDatabase" , method=RequestMethod.GET)
+	public ModelAndView addnNewDatabase(@ModelAttribute("connection") DbConnection connection) {
+		logger.info("Enter addnewdatabase ");
+		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/savenNewDatabase" , method=RequestMethod.POST)
+	public ModelAndView savenNewDatabase(@ModelAttribute("connection") DbConnection connection) {
+		logger.info("Enter savenNewDatabase ");
+		System.out.println("connection desc "+connection.getDescription());
+		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
+		return modelAndView;
 	}
 }

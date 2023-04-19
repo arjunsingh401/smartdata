@@ -9,13 +9,13 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item <%if(pageName.equalsIgnoreCase("home")){out.print("active");} %>">
-        <a class="nav-link <%if(pageName.equalsIgnoreCase("home")){out.print("active");} %>" href="${pageContext.request.contextPath}/home">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link <%if(pageName.equalsIgnoreCase("home")){out.print("active");} %>" href="${pageContext.request.contextPath}/home"><i class="fa fa-home"></i> Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item <%if(pageName.equalsIgnoreCase("jobs")){out.print("active");} %>">
-        <a class="nav-link <%if(pageName.equalsIgnoreCase("jobs")){out.print("active");} %>" href="#jobs">Jobs</a>
+        <a class="nav-link <%if(pageName.equalsIgnoreCase("jobs")){out.print("active");} %>" href="#jobs"><i class="fa fa-briefcase"></i> Jobs</a>
       </li>
       <li class="nav-item  <%if(pageName.equalsIgnoreCase("config")){out.print("active");} %>">
-        <a class="nav-link <%if(pageName.equalsIgnoreCase("config")){out.print("active");} %>" href="${pageContext.request.contextPath}/configdatabase">Database</a>
+        <a class="nav-link <%if(pageName.equalsIgnoreCase("config")){out.print("active");} %>" href="${pageContext.request.contextPath}/getDbConnections"><i class="fa fa-database"></i> Database</a>
       </li>
     </ul>
   </div>
