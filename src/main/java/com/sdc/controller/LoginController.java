@@ -72,5 +72,20 @@ public class LoginController {
 		return modelAndView;
 	}
 	
+	@RequestMapping("/home")
+	public String homePage() {
+		logger.info("home");
+		//user.getAllUser();
+		return "home";
+	}
+	
+	
+	@RequestMapping("/configdatabase")
+	public String configDatabase() {
+		
+		logger.info("configdatabase");
+		//user.getAllUser();
+		return "configdatabase";
+	}
 	
 }

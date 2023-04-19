@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  font-family: system-ui;
+}
+
+.topnav {
+  background-color: #4b52a4;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: blue;
+}
+
+.topnav a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
+.float-container {
+    border: 3px solid #fff;
+    padding: 20px;
+}
+
+.float-child {
+    width: 50%;
+    float: left;
+    padding: 20px;
+    border: 2px solid red;
+}
+.card-body{
+	padding: 0px;
+}  		
+#myTargetTable td ,#mySoureTable td{
+	height: 65px;
+}
+#sourceBody td,#destinationBody td {
+height: 65px;
+}
