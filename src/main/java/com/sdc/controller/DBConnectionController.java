@@ -16,17 +16,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sdc.model.DbConnection;
-import com.sdc.model.User;
 import com.sdc.service.DBConnectionService;
 
 /**
  * @author arjun
  *
  */
-@Controller
+@RestController
 public class DBConnectionController {
 
 	private static final Logger logger = LogManager.getLogger(DBConnectionController.class);
@@ -79,5 +79,16 @@ public class DBConnectionController {
 		
 		return modelAndView;
 	}
+	@RequestMapping(value="/getDbConnectionNames" , method=RequestMethod.GET)
+	public List<String> getDbConnectionNames() {
+		
+		logger.info("Enter getDbConnectionNames ");
+		
+		List<String> connections = dbConnectionService.getDbConnectionNames();
+		
+		logger.info("connections : "+connections.size());
 	
+		
+		return connections;
+	}
 }

@@ -19,4 +19,6 @@ public interface DBConnectionService {
 
 	int saveDbConnection(DbConnection dbConnection);
 
+	List<String> getDbConnectionNames();
+
 }

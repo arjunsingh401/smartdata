@@ -129,4 +129,26 @@ public class DBConnectionRepository {
 			}
 					return dbConnection.getId();
 		}
+	 public List<String> getDbConnectionNames() {
+		 	String sql ="SELECT NAME FROM DB_CONNECTION ";
+			
+			logger.info(" sql :"+sql);
+			List<String> connections = new ArrayList<String>(); 
+			try {
+				connections = jdbcTemplate3.query(sql,new RowMapper<String>() {
+		        @Override
+		        public String mapRow(ResultSet rs, int i) throws SQLException {
+		        	
+				return  rs.getString("NAME");
+		        }
+		    });
+			
+			} catch(EmptyResultDataAccessException e1) {
+				e1.printStackTrace();
+				logger.error(""+e1.getMessage());
+			} catch (Exception e) {
+				logger.error("",e);
+			}
+			return connections;
+		}
 }

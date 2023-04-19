@@ -66,5 +66,15 @@ public class DBConnectionServiceImpl implements DBConnectionService {
 		}
 		return id;
 	}
-	
+	@Override
+	public List<String> getDbConnectionNames(){
+		
+		List<String> connections = new ArrayList<String>();
+		try {
+		connections = dBConnectionRepository.getDbConnectionNames();
+		}catch (Exception e) {
+			logger.error("",e);
+		}
+		return connections;
+	}
 }
