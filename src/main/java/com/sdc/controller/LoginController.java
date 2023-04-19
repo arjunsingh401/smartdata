@@ -38,8 +38,7 @@ public class LoginController {
 	@RequestMapping("/")
 	public String homeIndex() {
 		
-		logger.info("index");
-		//user.getAllUser();
+		//logger.info("index");
 		return "index";
 	}
 	

@@ -110,7 +110,7 @@ public class FieldsRepository {
 	 public List<Column> getSourceColumns(String table) {
 		 	String sql ="SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE  TABLE_NAME = '"+table+"'";
 			
-			logger.info("column sql :"+sql);
+			//logger.info("column sql :"+sql);
 			List<Column> columns = new ArrayList<Column>(); 
 			try {
 				columns = jdbcTemplate1.query(sql,new RowMapper<Column>() {
@@ -126,7 +126,7 @@ public class FieldsRepository {
 		        }
 		    });
 			
-		     logger.info("# columns size - " + columns.size());
+		    // logger.info("# columns size - " + columns.size());
 			} catch(EmptyResultDataAccessException e1) {
 				e1.printStackTrace();
 				logger.error("",e1);
@@ -194,7 +194,7 @@ public class FieldsRepository {
 	 public List<Column> getTargetColumns(String table) {
 		 	String sql ="SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE  TABLE_NAME = '"+table+"'";
 			
-			logger.info("column sql :"+sql);
+			//logger.info("column sql :"+sql);
 			List<Column> columns = new ArrayList<Column>(); 
 			try {
 				columns = jdbcTemplate2.query(sql,new RowMapper<Column>() {
@@ -210,7 +210,7 @@ public class FieldsRepository {
 		        }
 		    });
 			
-		     logger.info("# columns size - " + columns.size());
+		    // logger.info("# columns size - " + columns.size());
 			} catch(EmptyResultDataAccessException e1) {
 				e1.printStackTrace();
 				logger.error("",e1);
