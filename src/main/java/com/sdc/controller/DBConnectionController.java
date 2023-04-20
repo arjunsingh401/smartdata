@@ -68,13 +68,6 @@ public class DBConnectionController {
 		return modelAndView;
 	}
 	
-	@RequestMapping(value = "/updateDatabase", method = RequestMethod.POST)
-	public ModelAndView updateUser(HttpSession session, HttpServletRequest request, HttpServletResponse response, @ModelAttribute("connection") DbConnection connection) {
-		String nextPage = "index";
-		ModelAndView modelView = new ModelAndView(nextPage);
-		return modelView;
-	}
-	
 	@RequestMapping(value="/saveDbConnection" , method=RequestMethod.POST)
 	public ModelAndView saveDbConnection(@ModelAttribute("dbConnection") DbConnection dbConnection) {
 		
@@ -82,7 +75,7 @@ public class DBConnectionController {
 		
 		int id = dbConnectionService.saveDbConnection(dbConnection);
 	
-		modelAndView.setViewName("dbConnection");  // redirect name means jsp name
+		modelAndView.setViewName("redirect:/getDbConnections");  // redirect name means jsp name
 		
 		return modelAndView;
 	}
@@ -90,14 +83,6 @@ public class DBConnectionController {
 	@RequestMapping(value="/addnNewDatabase" , method=RequestMethod.GET)
 	public ModelAndView addnNewDatabase(@ModelAttribute("connection") DbConnection connection) {
 		logger.info("Enter addnewdatabase ");
-		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
-		return modelAndView;
-	}
-	
-	@RequestMapping(value="/savenNewDatabase" , method=RequestMethod.POST)
-	public ModelAndView savenNewDatabase(@ModelAttribute("connection") DbConnection connection) {
-		logger.info("Enter savenNewDatabase ");
-		System.out.println("connection desc "+connection.getDescription());
 		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
 		return modelAndView;
 	}

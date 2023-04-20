@@ -45,3 +45,21 @@ body {
 #sourceBody td,#destinationBody td {
 height: 65px;
 }
+
+.form-group .required:after {
+	color: #e32;
+	content: ' *';
+	display: inline;
+}
+
+.required:after {
+	color: #e32;
+	content: ' *';
+	display: inline;
+}
+
+.form-group .required-before:before {
+	color: black;
+	content: ' *';
+	display: inline;
+}

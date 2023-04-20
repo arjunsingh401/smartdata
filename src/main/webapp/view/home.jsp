@@ -16,13 +16,6 @@
 		<jsp:include page="header.jsp">
 				<jsp:param value="home" name="page"/>
 		</jsp:include>
-		<div class = "container-fluid">
-	         <nav aria-label = "breadcrumb">
-	            <ul class = "breadcrumb">
-	               <li class = "breadcrumb-item active" aria-current = "page"><i class="fa fa-home"></i> Home</li>
-	            </ul>
-	         </nav>
-	    </div>
 		<div class="container-fluid">
 		      <table class="table" cellspacing="0">
 	               <thead>

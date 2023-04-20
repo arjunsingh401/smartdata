@@ -26,49 +26,62 @@
 	            </ul>
 	         </nav>
 	    </div>
-	    <form:form action="${pageContext.request.contextPath}/updateDatabase" method="post" modelAttribute="connection">
+	    <form:form action="${pageContext.request.contextPath}/saveDbConnection" method="post" modelAttribute="connection">
 			<div class="container-fluid">
 				<div class="row">
 				   	 <div class="col-sm-6">
 					 <div class="form-group">
-			            <label for="database">Database</label>
-			            <form:input path="description" id="description" cssClass="form-control"/>
+			            <label class="required" for="database">Database</label>
+			            <form:select  path="type" id="type" class="form-control" required="true">
+						    <form:option value="">-- Target Database --</form:option>
+						    <form:option value="oracle">Oracle</form:option>
+						    <form:option value="mysql">MySQL</form:option>
+						    <form:option value="sqlserver">SQL Server</form:option>
+						</form:select>
 			          </div>
 				      </div>
 				      <div class="col-sm-6">    
 			          <div class="form-group">
-			            <label for="dbname">DB Name</label>
-			            <input type="text" class="form-control" id="dbname" placeholder="DB Name">
+			            <label class="required" for="dbname">DB Name</label>
+			             <form:input path="name" id="name" cssClass="form-control" required="true"/>
+			          </div>
+			           </div>
+			           <div class="col-sm-6">    
+			          <div class="form-group">
+			            <label class="required" for="dbname">Description</label>
+			             <form:input path="description" id="description" cssClass="form-control" required="true"/>
 			          </div>
 			           </div>
 				      <div class="col-sm-6"> 
 			          <div class="form-group">
-			            <label for="url">URL</label>
-			            <form:input path="url" id="url" cssClass="form-control"/>
+			            <label class="required" for="url">URL</label>
+			            <form:input path="url" id="url" cssClass="form-control" required="true"/>
 			          </div>
 			           </div>
 				      <div class="col-sm-6"> 
 			          <div class="form-group">
-			            <label for="drivername">Driver Class Name</label>
-			            <input type="text" class="form-control" id="drivername" placeholder="Driver Class Name">
+			            <label class="required" for="drivername">Driver Class Name</label>
+			             <form:input path="driverclass" id="driverclass" cssClass="form-control" required="true"/>
 			          </div>
 			           </div>
 				      <div class="col-sm-6"> 
 			          <div class="form-group">
-			            <label for="username">Username</label>
-			            <input type="text" class="form-control" id="username" placeholder="Username">
+			            <label class="required" for="username">Username</label>
+			            <form:input path="username" id="username" cssClass="form-control" required="true"/>
 			          </div>
 			           </div>
 				      <div class="col-sm-6"> 
 			          <div class="form-group">
-			            <label for="password1">Password</label>
-			            <input type="password" class="form-control" id="password" placeholder="Password">
+			            <label class="required" for="password1">Password</label>
+			             <form:input path="password" id="password" cssClass="form-control" required="true"/>
+			             <form:hidden path="id"/>
+			             <form:hidden path="userId"/>
 			          </div>
 			          </div>
 		         </div>
 		         <div class="row"> 
 	                   <div class="col-sm-12 text-center">
-	                      <a href="${pageContext.request.contextPath}/services" title="BACK"  class="btn btn-danger cancel"><i class="fa fa-remove"></i> Cancel</a>
+	                      <a href="${pageContext.request.contextPath}/getDbConnections" title="BACK"  class="btn btn-danger cancel"><i class="fa fa-remove"></i> Cancel</a>
 	                      <button id="submit-button" class="btn btn-primary cancel" type="submit" data-ng-click="validateForm($event)"><i class="fa fa-save"></i> Update</button>
 	                  </div>
 	              </div>

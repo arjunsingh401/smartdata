@@ -44,6 +44,7 @@
 		                   <tr>
 		                       <th>Database</th>
 		                       <th>DB Name</th>
+		                       <th>Description</th>
 		                       <th>URL </th>
 		                       <th>Driver Class Name </th>
 		                       <th>Username </th>
@@ -57,9 +58,10 @@
 		               		 %>
 		               			 <tr>
 		                       <td width="20%">
-		                        <a href="${pageContext.request.contextPath}/getDbConnection/<%=db.getId()%>"><%=db.getDescription()%></a>
+		                        <a href="${pageContext.request.contextPath}/getDbConnection/<%=db.getId()%>"><%=db.getType()%></a>
 		                       </td>
 		                       <td  width="20%"><%=db.getName()%></td>
+		                       <td  width="20%"><%=db.getDescription()%></td>
 		                       <td  width="10%"><%=db.getUrl()%></td>
 		                       <td  width="20%"><%=db.getDriverclass()%></td>
 		                       <td  width="15%"><%=db.getUsername()%></td>
