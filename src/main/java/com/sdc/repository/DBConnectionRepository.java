@@ -80,22 +80,24 @@ public class DBConnectionRepository {
 			DbConnection connection = new DbConnection(); 
 			try {
 				connection = jdbcTemplate3.query(sql,new ResultSetExtractor<DbConnection>() {
-		    
-				public DbConnection extractData(ResultSet rs) throws SQLException, DataAccessException {
-		        	DbConnection dbConnection = new DbConnection();
-		        	
-		        	dbConnection.setId(rs.getInt("ID"));
-		        	dbConnection.setType(rs.getString("DATABASE_TYPE"));
-		        	dbConnection.setDescription(rs.getString("DESCRIPTION"));
-		        	dbConnection.setName(rs.getString("NAME"));
-		        	dbConnection.setUrl(rs.getString("URL"));
-		        	dbConnection.setDriverclass(rs.getString("DRIVER_CLASS"));
-		        	dbConnection.setUsername(rs.getString("USERNAME"));
-		        	dbConnection.setPassword(rs.getString("PASSWORD"));
-		        	
-				return  dbConnection;
-		        }
-		    });
+					    @Override
+					    public DbConnection extractData(ResultSet rs) throws SQLException, DataAccessException {
+					    	DbConnection dbConnection = new DbConnection();
+					    	if(rs.next()) {
+					    		//dbConnection.setId(rs.getInt("ID"));
+					        	dbConnection.setType(rs.getString("DATABASE_TYPE"));
+					        	dbConnection.setDescription(rs.getString("DESCRIPTION"));
+					        	dbConnection.setName(rs.getString("NAME"));
+					        	dbConnection.setUrl(rs.getString("URL"));
+					        	dbConnection.setDriverclass(rs.getString("DRIVER_CLASS"));
+					        	dbConnection.setUsername(rs.getString("USERNAME"));
+					        	dbConnection.setPassword(rs.getString("PASSWORD"));
+					    	}
+					    	return dbConnection;	
+					    }
+					});
+				
+				
 			} catch(EmptyResultDataAccessException e1) {
 				e1.printStackTrace();
 				logger.error(""+e1.getMessage());

@@ -31,9 +31,9 @@
 	                       <td>
 	                       	<select  name="sourceDatabase" id="sourceDatabase" class="form-control">
 							    <option value="">-- Source Database --</option>
-							    <option value="oracle">Oracle</option>
+							    <!-- <option value="oracle">Oracle</option>
 							    <option value="mysql">MySQL</option>
-							    <option value="sqlserver">SQL Server</option>
+							    <option value="sqlserver">SQL Server</option> -->
 							</select>
 	                       </td>
 	                       <td>
@@ -54,9 +54,9 @@
 	                       <td> 
 	                       	<select  name="targetDatabase" id="targetDatabase" class="form-control">
 							    <option value="">-- Target Database --</option>
-							    <option value="oracle">Oracle</option>
+							  <!--   <option value="oracle">Oracle</option>
 							    <option value="mysql">MySQL</option>
-							    <option value="sqlserver">SQL Server</option>
+							    <option value="sqlserver">SQL Server</option> -->
 							</select>
 	                       
 	                       </td>
@@ -135,7 +135,67 @@
 		        document.getElementById('table').disabled = true ;
 		        document.getElementById('targetSchema').disabled = true;
 		        document.getElementById('targetTable').disabled = true;
+		        dbConnectionNames();
 			});
+		  	
+
+			function dbConnectionNames(){
+		 		 var dbData = $.ajax({
+		 		    type: 'GET',       
+		 		    url: "${pageContext.request.contextPath}/getDbConnectionNames",	    
+		 		   	contentType: "application/json",
+		 		    context: document.body,
+		 		    global: false,
+		 		    async:false,
+		 		    success: function(data) {
+		 		    	//alert('Source connection successfull'+data);
+		 		        return data;
+		 		    },
+					error : function(xhr, ajaxOptions, thrownError) {
+						alert('Unable to load Data Bases.');
+					}
+		 		}).responseText;
+		 		 
+		         sourceDB(dbData);
+		 		
+		         targetDB(dbData);
+		 			
+		  	}
+		  	
+		  	function sourceDB(dbData){
+		  		const sourcedbConnection = document.getElementById('sourceDatabase'),
+			        selects = document.querySelectorAll('select')
+			        selects.forEach(select => {
+			            if(select.disabled == true){
+			                select.style.cursor = "auto"
+			            }
+			            else{
+			                select.style.cursor = "pointer"
+			            }
+			        })
+			        dbData = JSON.parse(dbData);
+					dbData.forEach(function(element){
+						sourcedbConnection.options[sourcedbConnection.options.length] = new Option(element, element);
+					});
+		  	}
+		  	function targetDB(dbData){
+		  		const targetdbConnection = document.getElementById('targetDatabase'),
+			        selects = document.querySelectorAll('select')
+			        selects.forEach(select => {
+			            if(select.disabled == true){
+			                select.style.cursor = "auto"
+			            }
+			            else{
+			                select.style.cursor = "pointer"
+			            }
+			        })
+			        dbData = JSON.parse(dbData);
+				//const targetdbConnection = document.getElementById('targetSchema');
+					//selectSchema.options[0] = new Option("-- Select Table --", "");
+					dbData.forEach(function(element){
+						targetdbConnection.options[targetdbConnection.options.length] = new Option(element, element);
+					});
+		  	}
 		  	
 		 	function Column(userId,schema, table, name, dataType, length,t_schema, t_table, t_name, t_dataType, t_length) {
 				this.userId=userId;

@@ -69,11 +69,11 @@ public class DBConnectionController {
 	}
 	
 	@RequestMapping(value="/saveDbConnection" , method=RequestMethod.POST)
-	public ModelAndView saveDbConnection(@ModelAttribute("dbConnection") DbConnection dbConnection) {
+	public ModelAndView saveDbConnection(@ModelAttribute("connection") DbConnection connection) {
 		
 		logger.info("Enter saveDbConnection ");
 		
-		int id = dbConnectionService.saveDbConnection(dbConnection);
+		int id = dbConnectionService.saveDbConnection(connection);
 	
 		modelAndView.setViewName("redirect:/getDbConnections");  // redirect name means jsp name
 		
@@ -86,4 +86,24 @@ public class DBConnectionController {
 		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
 		return modelAndView;
 	}
+	
+	@RequestMapping(value="/savenNewDatabase" , method=RequestMethod.POST)
+	public ModelAndView savenNewDatabase(@ModelAttribute("connection") DbConnection connection) {
+		logger.info("Enter savenNewDatabase ");
+		System.out.println("connection desc "+connection.getDescription());
+		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
+		return modelAndView;
+	}
+	@RequestMapping(value="/getDbConnectionNames" , method=RequestMethod.GET)
+	public List<String> getDbConnectionNames() {
+		
+		logger.info("Enter getDbConnections ");
+		
+		List<String> connections = dbConnectionService.getDbConnectionNames();
+		
+		logger.info("connections : "+connections.size());
+	
+		return connections;
+	}
+	
 }
