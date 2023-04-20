@@ -4,6 +4,9 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="html"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="logic"%> 
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
+<%
+	int userId = (Integer)session.getAttribute("userId");
+%>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -75,7 +78,7 @@
 			            <label class="required" for="password1">Password</label>
 			             <form:input path="password" id="password" cssClass="form-control" required="true"/>
 			             <form:hidden path="id" value="0"/>
-			             <form:hidden path="userId" value="0"/>
+			             <form:hidden path="userId" value="<%=userId %>"/>
 			          </div>
 			          </div>
 		         </div>

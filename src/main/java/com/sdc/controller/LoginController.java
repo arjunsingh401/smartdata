@@ -63,6 +63,7 @@ public class LoginController {
 			modelAndView.setViewName("index");
 			modelAndView.addObject("loginForm", userDetails);
 		}else {
+			session.setAttribute("userId", userDetails.getUserId());
 			modelAndView.setViewName("home");
 			modelAndView.addObject("loginForm", userDetails);
 		}
