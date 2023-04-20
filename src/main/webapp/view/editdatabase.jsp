@@ -43,7 +43,7 @@
 				      <div class="col-sm-6">    
 			          <div class="form-group">
 			            <label class="required" for="dbname">DB Name</label>
-			             <form:input path="name" id="name" cssClass="form-control" required="true"/>
+			             <form:input path="name" id="name" cssClass="form-control" required="true" readonly="true"/>
 			          </div>
 			           </div>
 			           <div class="col-sm-6">    

@@ -32,6 +32,11 @@
 	    <form:form action="${pageContext.request.contextPath}/saveDbConnection" method="post" modelAttribute="connection">
 			<div class="container-fluid">
 				<div class="row">
+                   	<div class="col-sm-6 text-left">
+                   		<font color="red">${errorMsg}</font>
+                   	</div>
+              	</div>
+				<div class="row">
 				   	 <div class="col-sm-6">
 					 <div class="form-group">
 			            <label class="required" for="database">Database</label>

@@ -84,7 +84,7 @@ public class DBConnectionRepository {
 					    public DbConnection extractData(ResultSet rs) throws SQLException, DataAccessException {
 					    	DbConnection dbConnection = new DbConnection();
 					    	if(rs.next()) {
-					    		//dbConnection.setId(rs.getInt("ID"));
+					    		dbConnection.setId(rs.getInt("ID"));
 					        	dbConnection.setType(rs.getString("DATABASE_TYPE"));
 					        	dbConnection.setDescription(rs.getString("DESCRIPTION"));
 					        	dbConnection.setName(rs.getString("NAME"));

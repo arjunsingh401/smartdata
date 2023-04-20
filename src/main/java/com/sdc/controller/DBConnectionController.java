@@ -4,6 +4,7 @@
 package com.sdc.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +13,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +32,6 @@ public class DBConnectionController {
 
 	private static final Logger logger = LogManager.getLogger(DBConnectionController.class);
 	
-	ModelAndView modelAndView = new ModelAndView();
 	HttpServletRequest request;
 	@Autowired
 	HttpSession session;
@@ -42,7 +41,7 @@ public class DBConnectionController {
 	
 	@RequestMapping(value="/getDbConnections" , method=RequestMethod.GET)
 	public ModelAndView getDbConnections() {
-		
+		ModelAndView modelAndView = new ModelAndView();
 		logger.info("Enter getDbConnections ");
 		
 		List<DbConnection> connections = dbConnectionService.getDbConnections();
@@ -56,13 +55,12 @@ public class DBConnectionController {
 	}
 	
 	@RequestMapping(value="/getDbConnection/{id}" , method=RequestMethod.GET)
-	public ModelAndView getDbConnection(HttpSession session, HttpServletRequest request, HttpServletResponse response,@PathVariable("id") int id,Model model) {
-		
+	public ModelAndView getDbConnection(HttpSession session, HttpServletRequest request, HttpServletResponse response,@PathVariable("id") int id,@ModelAttribute("connection") DbConnection connection) {
+		ModelAndView modelAndView = new ModelAndView();
 		logger.info("Enter getDbConnection "+id);
 		
-		DbConnection list = dbConnectionService.getDbConnection(id);
-		model.addAttribute("connection", list);
-		modelAndView.addObject("connection",list);
+		connection = dbConnectionService.getDbConnection(id);
+		modelAndView.addObject("connection",connection);
 		modelAndView.setViewName("editdatabase");  // redirect name means jsp name
 		
 		return modelAndView;
@@ -70,18 +68,22 @@ public class DBConnectionController {
 	
 	@RequestMapping(value="/saveDbConnection" , method=RequestMethod.POST)
 	public ModelAndView saveDbConnection(@ModelAttribute("connection") DbConnection connection) {
-		
+		ModelAndView modelAndView = new ModelAndView();
 		logger.info("Enter saveDbConnection ");
-		
-		int id = dbConnectionService.saveDbConnection(connection);
-	
-		modelAndView.setViewName("redirect:/getDbConnections");  // redirect name means jsp name
-		
+		List<String> connections = dbConnectionService.getDbConnectionNames().stream().filter(n -> n.equalsIgnoreCase(connection.getName())).collect(Collectors.toUnmodifiableList());
+		if(connections.size() > 0 && connection.getId() == 0) {
+			modelAndView.setViewName("addnewdatabase"); 
+			modelAndView.addObject("errorMsg", "DB Name "+connection.getName()+" already exists");
+		} else {
+			int id = dbConnectionService.saveDbConnection(connection);
+			modelAndView.setViewName("redirect:/getDbConnections");  // redirect name means jsp name
+		}
 		return modelAndView;
 	}
 	
 	@RequestMapping(value="/addnNewDatabase" , method=RequestMethod.GET)
 	public ModelAndView addnNewDatabase(@ModelAttribute("connection") DbConnection connection) {
+		ModelAndView modelAndView = new ModelAndView();
 		logger.info("Enter addnewdatabase ");
 		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
 		return modelAndView;
@@ -89,6 +91,7 @@ public class DBConnectionController {
 	
 	@RequestMapping(value="/savenNewDatabase" , method=RequestMethod.POST)
 	public ModelAndView savenNewDatabase(@ModelAttribute("connection") DbConnection connection) {
+		ModelAndView modelAndView = new ModelAndView();
 		logger.info("Enter savenNewDatabase ");
 		System.out.println("connection desc "+connection.getDescription());
 		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
