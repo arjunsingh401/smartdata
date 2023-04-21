@@ -27,8 +27,8 @@ public class LoginController {
 
 	private static final Logger logger = LogManager.getLogger(LoginController.class);
 	
-	ModelAndView modelAndView = new ModelAndView();
 	HttpServletRequest request;
+	
 	@Autowired
 	HttpSession session;
 	
@@ -44,6 +44,7 @@ public class LoginController {
 	
 	@RequestMapping(value="/login" , method=RequestMethod.POST)
 	public ModelAndView login(@ModelAttribute("user") User user) {
+		ModelAndView modelAndView = new ModelAndView();
 		
 		logger.info("login api starts ");
 		logger.info("user : "+user.toString());
@@ -64,6 +65,7 @@ public class LoginController {
 			modelAndView.addObject("loginForm", userDetails);
 		}else {
 			session.setAttribute("userId", userDetails.getUserId());
+			session.setAttribute("userName", userDetails.getUserName());
 			modelAndView.setViewName("home");
 			modelAndView.addObject("loginForm", userDetails);
 		}
@@ -74,19 +76,30 @@ public class LoginController {
 	}
 	
 	@RequestMapping("/home")
-	public String homePage() {
-		logger.info("home");
-		//user.getAllUser();
-		return "home";
+	public String homePage(HttpServletRequest request) {
+		String nextPage = "redirect:/";
+		if(!userService.reloginRequired(request)) {
+			nextPage = "home";
+		} 
+		
+		return nextPage;
 	}
 	
 	
 	@RequestMapping("/configdatabase")
-	public String configDatabase() {
-		
-		logger.info("configdatabase");
-		//user.getAllUser();
-		return "configdatabase";
+	public String configDatabase(HttpServletRequest request) {
+		String nextPage = "redirect:/";
+		if(!userService.reloginRequired(request)) {
+			logger.info("configdatabase");
+			//user.getAllUser();
+			nextPage  = "configdatabase";
+		}
+		return nextPage;
 	}
 	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "index";
+	}
 }

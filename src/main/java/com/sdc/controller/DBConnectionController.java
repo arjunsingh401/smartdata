@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sdc.model.DbConnection;
 import com.sdc.service.DBConnectionService;
+import com.sdc.service.UserService;
 
 /**
  * @author arjun
@@ -32,24 +33,30 @@ public class DBConnectionController {
 
 	private static final Logger logger = LogManager.getLogger(DBConnectionController.class);
 	
-	HttpServletRequest request;
 	@Autowired
 	HttpSession session;
 	
 	@Autowired
 	DBConnectionService dbConnectionService;
 	
-	@RequestMapping(value="/getDbConnections" , method=RequestMethod.GET)
-	public ModelAndView getDbConnections() {
-		ModelAndView modelAndView = new ModelAndView();
-		logger.info("Enter getDbConnections ");
-		
-		List<DbConnection> connections = dbConnectionService.getDbConnections();
-		
-		logger.info("connections : "+connections.size());
+	@Autowired
+	UserService userService;
 	
-		modelAndView.addObject("connections",connections);
-		modelAndView.setViewName("databaselist");  // redirect name means jsp name
+	@RequestMapping(value="/getDbConnections" , method=RequestMethod.GET)
+	public ModelAndView getDbConnections(HttpServletRequest request) {
+		ModelAndView modelAndView = new ModelAndView();
+		String nextPage = "redirect:/";
+		if(!userService.reloginRequired(request)) {
+			logger.info("Enter getDbConnections ");
+			
+			List<DbConnection> connections = dbConnectionService.getDbConnections();
+			
+			logger.info("connections : "+connections.size());
+		
+			modelAndView.addObject("connections",connections);
+			nextPage = "databaselist";  
+		}
+		modelAndView.setViewName(nextPage);  // redirect name means jsp name
 		
 		return modelAndView;
 	}
@@ -57,46 +64,63 @@ public class DBConnectionController {
 	@RequestMapping(value="/getDbConnection/{id}" , method=RequestMethod.GET)
 	public ModelAndView getDbConnection(HttpSession session, HttpServletRequest request, HttpServletResponse response,@PathVariable("id") int id,@ModelAttribute("connection") DbConnection connection) {
 		ModelAndView modelAndView = new ModelAndView();
-		logger.info("Enter getDbConnection "+id);
-		
-		connection = dbConnectionService.getDbConnection(id);
-		modelAndView.addObject("connection",connection);
-		modelAndView.setViewName("editdatabase");  // redirect name means jsp name
+		String nextPage = "redirect:/";
+		if(!userService.reloginRequired(request)) {
+			logger.info("Enter getDbConnection "+id);
+			
+			connection = dbConnectionService.getDbConnection(id);
+			modelAndView.addObject("connection",connection);
+			nextPage = "editdatabase"; 
+		}
+		modelAndView.setViewName(nextPage); 
 		
 		return modelAndView;
 	}
 	
 	@RequestMapping(value="/saveDbConnection" , method=RequestMethod.POST)
-	public ModelAndView saveDbConnection(@ModelAttribute("connection") DbConnection connection) {
+	public ModelAndView saveDbConnection(HttpServletRequest request,@ModelAttribute("connection") DbConnection connection) {
 		ModelAndView modelAndView = new ModelAndView();
-		logger.info("Enter saveDbConnection ");
-		List<String> connections = dbConnectionService.getDbConnectionNames().stream().filter(n -> n.equalsIgnoreCase(connection.getName())).collect(Collectors.toUnmodifiableList());
-		if(connections.size() > 0 && connection.getId() == 0) {
-			modelAndView.setViewName("addnewdatabase"); 
-			modelAndView.addObject("errorMsg", "DB Name "+connection.getName()+" already exists");
-		} else {
-			int id = dbConnectionService.saveDbConnection(connection);
-			modelAndView.setViewName("redirect:/getDbConnections");  // redirect name means jsp name
+		String nextPage = "redirect:/";
+		if(!userService.reloginRequired(request)) {
+			logger.info("Enter saveDbConnection ");
+			List<String> connections = dbConnectionService.getDbConnectionNames().stream().filter(n -> n.equalsIgnoreCase(connection.getName())).collect(Collectors.toUnmodifiableList());
+			if(connections.size() > 0 && connection.getId() == 0) {
+				nextPage = "addnewdatabase"; 
+				modelAndView.addObject("errorMsg", "DB Name "+connection.getName()+" already exists");
+			} else {
+				dbConnectionService.saveDbConnection(connection);
+				nextPage = "redirect:/getDbConnections";  // redirect name means jsp name
+			}
 		}
+		modelAndView.setViewName(nextPage); 
 		return modelAndView;
 	}
 	
 	@RequestMapping(value="/addnNewDatabase" , method=RequestMethod.GET)
-	public ModelAndView addnNewDatabase(@ModelAttribute("connection") DbConnection connection) {
+	public ModelAndView addnNewDatabase(HttpServletRequest request,@ModelAttribute("connection") DbConnection connection) {
 		ModelAndView modelAndView = new ModelAndView();
-		logger.info("Enter addnewdatabase ");
-		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
+		String nextPage = "redirect:/";
+		if(!userService.reloginRequired(request)) {
+			logger.info("Enter addnewdatabase ");
+			nextPage = "addnewdatabase";  // redirect name means jsp name
+		}
+		modelAndView.setViewName(nextPage);  // redirect name means jsp name
 		return modelAndView;
 	}
 	
 	@RequestMapping(value="/savenNewDatabase" , method=RequestMethod.POST)
-	public ModelAndView savenNewDatabase(@ModelAttribute("connection") DbConnection connection) {
+	public ModelAndView savenNewDatabase(HttpServletRequest request,@ModelAttribute("connection") DbConnection connection) {
 		ModelAndView modelAndView = new ModelAndView();
-		logger.info("Enter savenNewDatabase ");
-		System.out.println("connection desc "+connection.getDescription());
-		modelAndView.setViewName("addnewdatabase");  // redirect name means jsp name
+		String nextPage = "redirect:/";
+		if(!userService.reloginRequired(request)) {
+			logger.info("Enter savenNewDatabase ");
+			System.out.println("connection desc "+connection.getDescription());
+			nextPage = "addnewdatabase";
+		}
+		modelAndView.setViewName(nextPage);
 		return modelAndView;
 	}
+	
 	@RequestMapping(value="/getDbConnectionNames" , method=RequestMethod.GET)
 	public List<String> getDbConnectionNames() {
 		
