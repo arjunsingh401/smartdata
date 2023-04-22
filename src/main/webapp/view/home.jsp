@@ -5,6 +5,7 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 <!DOCTYPE html>
 <html>
+<%int userId = (Integer)session.getAttribute("userId"); %>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>SDC Home</title>
@@ -131,6 +132,7 @@
 		  
 		  	<script>
 		  	$(document).ready(function(){
+		  		alert("redy");
 			    document.getElementById('schema').disabled = true;
 		        document.getElementById('table').disabled = true ;
 		        document.getElementById('targetSchema').disabled = true;
@@ -297,7 +299,7 @@
 		 		var totalSourceRows = $('#mySoureTable tr').length;
 		 		var totalDestinationRows = $('#myTargetTable tr').length;
 				var arr = [];
-				var userId=${loginForm.userId};
+				var userId=<%=userId%>;
 		 		$('#myTargetTable tr').each(function(row) {
 		 		    var rowTRID = $(this).closest('tr').attr('id')
 		 		    var rowSplit = rowTRID.split('::');
@@ -351,7 +353,7 @@
 		        var totalSourceRows = $('#mySoureTable tr').length;
 		        var totalDestinationRows = $('#myTargetTable tr').length;
 		        var arr = [];
-				var userId=${loginForm.userId};
+				var userId=<%=userId%>;
 		       
 		        $('#myTargetTable tr').each(function(row) {
 		            var rowTRID = $(this).closest('tr').attr('id')
