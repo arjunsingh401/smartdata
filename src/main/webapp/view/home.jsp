@@ -132,7 +132,6 @@
 		  
 		  	<script>
 		  	$(document).ready(function(){
-		  		alert("redy");
 			    document.getElementById('schema').disabled = true;
 		        document.getElementById('table').disabled = true ;
 		        document.getElementById('targetSchema').disabled = true;

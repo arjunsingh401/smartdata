@@ -3,12 +3,17 @@
  */
 package com.sdc.serviceImpl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.sdc.controller.LoginController;
@@ -77,4 +82,24 @@ public class DBConnectionServiceImpl implements DBConnectionService {
 		}
 		return connections;
 	}
+	
+	@Override
+	public JdbcTemplate jdbcTemplate( String driverClassName,  String jdbcUrl, String username, String password)  throws IllegalAccessException, InvocationTargetException, InstantiationException {
+	     // extract this 4 parameters using your own logic
+
+		 // final String driverClassName = "org.h2.Driver";
+	     //final String jdbcUrl = "jdbc:h2:mem:test";
+	     //final String username = "sa";
+	     //final String password = "";
+		 
+	     // Build dataSource manually:
+	    // final Class<?> driverClass = ClassUtils.resolveClassName(driverClassName, this.getClass().getClassLoader());
+	     //final Driver driver = (Driver) ClassUtils.getConstructorIfAvailable(driverClass).newInstance();
+	    // final DataSource dataSource = new SimpleDriverDataSource(driver, jdbcUrl, username, password);
+	     // or using DataSourceBuilder:
+	     final DataSource dataSource = DataSourceBuilder.create().driverClassName(driverClassName).url(jdbcUrl).username(username).password(password).build();
+	     // and make the jdbcTemplate
+	     return new JdbcTemplate(dataSource);
+	 }
+	
 }

@@ -153,4 +153,37 @@ public class DBConnectionRepository {
 			}
 			return connections;
 		}
+	 public DbConnection getDbConnectionByName(String name) {
+		 	String sql ="SELECT ID, DATABASE_TYPE, NAME, DESCRIPTION, URL, DRIVER_CLASS, USERNAME, PASSWORD FROM DB_CONNECTION WHERE NAME='"+name+"'";
+			
+			logger.info(" sql :"+sql);
+			DbConnection connection = new DbConnection(); 
+			try {
+				connection = jdbcTemplate3.query(sql,new ResultSetExtractor<DbConnection>() {
+					    @Override
+					    public DbConnection extractData(ResultSet rs) throws SQLException, DataAccessException {
+					    	DbConnection dbConnection = new DbConnection();
+					    	if(rs.next()) {
+					    		dbConnection.setId(rs.getInt("ID"));
+					        	dbConnection.setType(rs.getString("DATABASE_TYPE"));
+					        	dbConnection.setDescription(rs.getString("DESCRIPTION"));
+					        	dbConnection.setName(rs.getString("NAME"));
+					        	dbConnection.setUrl(rs.getString("URL"));
+					        	dbConnection.setDriverclass(rs.getString("DRIVER_CLASS"));
+					        	dbConnection.setUsername(rs.getString("USERNAME"));
+					        	dbConnection.setPassword(rs.getString("PASSWORD"));
+					    	}
+					    	return dbConnection;	
+					    }
+					});
+				
+				
+			} catch(EmptyResultDataAccessException e1) {
+				e1.printStackTrace();
+				logger.error(""+e1.getMessage());
+			} catch (Exception e) {
+				logger.error("",e);
+			}
+			return connection;
+		}
 }

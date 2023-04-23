@@ -3,7 +3,6 @@
  */
 package com.sdc.repository;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,24 +11,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
 import com.sdc.model.Column;
 import com.sdc.model.MappingData;
 import com.sdc.model.Schema;
 import com.sdc.model.Table;
-
+import com.sdc.service.DBConnectionService;
+import com.sdc.model.DbConnection;
 /**
  * @author arjun
  *
@@ -51,18 +48,27 @@ public class FieldsRepository {
 	 @Qualifier("jdbcTemplate3")
 	 private JdbcTemplate jdbcTemplate3;
 	 
+	 @Autowired
+	 DBConnectionRepository dBConnectionRepository;
+	 
+	 @Autowired
+	 DBConnectionService dBConnectionService;
+	 
 	 public List<Schema> getSourceFields(String source) {
 		 	String sql ="SELECT name AS schema_name,  schema_id FROM sys.schemas ORDER BY name ";
 			
 			logger.info("schema sql :"+sql);
 			List<Schema> schemas = new ArrayList<Schema>(); 
+			
 			try {
-				schemas = jdbcTemplate1.query(sql,new RowMapper<Schema>() {
+				DbConnection connection = dBConnectionRepository.getDbConnectionByName(source);
+				JdbcTemplate jdbcTemplate = dBConnectionService.jdbcTemplate(connection.getDriverclass(), connection.getUrl(), connection.getUsername(), connection.getPassword());
+				schemas = jdbcTemplate.query(sql,new RowMapper<Schema>() {
 		        @Override
 		        public Schema mapRow(ResultSet rs, int i) throws SQLException {
 		        	Schema schema = new Schema();
 		        	schema.setSchemaName(rs.getString("schema_name"));
-		        	schema.setTables(getSourceTables(schema.getSchemaName()));
+		        	schema.setTables(getSourceTables(schema.getSchemaName(), jdbcTemplate));
 				return  schema;
 		        }
 		    });
@@ -77,19 +83,19 @@ public class FieldsRepository {
 			return schemas;
 		}
 	 
-	 public List<Table> getSourceTables(String schema) {
+	 public List<Table> getSourceTables(String schema,JdbcTemplate jdbcTemplate) {
 		 	String sql ="SELECT * FROM information_schema.tables WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA = '"+schema+"'";
 			
 			logger.info("table sql :"+sql);
 			List<Table> tables = new ArrayList<Table>(); 
 			try {
-				tables = jdbcTemplate1.query(sql,new RowMapper<Table>() {
+				tables = jdbcTemplate.query(sql,new RowMapper<Table>() {
 		        @Override
 		        public Table mapRow(ResultSet rs, int i) throws SQLException {
 		        	Table table = new Table();
 		        	table.setSchema(rs.getString("TABLE_SCHEMA"));
 		        	table.setName(rs.getString("TABLE_NAME"));
-		        	table.setColumns(getSourceColumns(table.getName()));
+		        	table.setColumns(getSourceColumns(table.getName(),jdbcTemplate));
 		        	
 				return  table;
 		        }
@@ -107,13 +113,13 @@ public class FieldsRepository {
 			return tables;
 		}
 	 
-	 public List<Column> getSourceColumns(String table) {
+	 public List<Column> getSourceColumns(String table,JdbcTemplate jdbcTemplate) {
 		 	String sql ="SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE  TABLE_NAME = '"+table+"'";
 			
 			//logger.info("column sql :"+sql);
 			List<Column> columns = new ArrayList<Column>(); 
 			try {
-				columns = jdbcTemplate1.query(sql,new RowMapper<Column>() {
+				columns = jdbcTemplate.query(sql,new RowMapper<Column>() {
 		        @Override
 		        public Column mapRow(ResultSet rs, int i) throws SQLException {
 		        	Column column = new Column();
@@ -141,12 +147,14 @@ public class FieldsRepository {
 			logger.info("schema sql :"+sql);
 			List<Schema> schemas = new ArrayList<Schema>(); 
 			try {
-				schemas = jdbcTemplate2.query(sql,new RowMapper<Schema>() {
+				DbConnection connection = dBConnectionRepository.getDbConnectionByName(source);
+				JdbcTemplate jdbcTemplate = dBConnectionService.jdbcTemplate(connection.getDriverclass(), connection.getUrl(), connection.getUsername(), connection.getPassword());
+				schemas = jdbcTemplate.query(sql,new RowMapper<Schema>() {
 		        @Override
 		        public Schema mapRow(ResultSet rs, int i) throws SQLException {
 		        	Schema schema = new Schema();
 		        	schema.setSchemaName(rs.getString("schema_name"));
-		        	schema.setTables(getTargetTables(schema.getSchemaName()));
+		        	schema.setTables(getTargetTables(schema.getSchemaName(),jdbcTemplate));
 				return  schema;
 		        }
 		    });
@@ -161,19 +169,19 @@ public class FieldsRepository {
 			return schemas;
 		}
 	 
-	 public List<Table> getTargetTables(String schema) {
+	 public List<Table> getTargetTables(String schema,JdbcTemplate jdbcTemplate) {
 		 	String sql ="SELECT * FROM information_schema.tables WHERE TABLE_TYPE='BASE TABLE' and TABLE_SCHEMA = '"+schema+"'";
 			
 			logger.info("table sql :"+sql);
 			List<Table> tables = new ArrayList<Table>(); 
 			try {
-				tables = jdbcTemplate2.query(sql,new RowMapper<Table>() {
+				tables = jdbcTemplate.query(sql,new RowMapper<Table>() {
 		        @Override
 		        public Table mapRow(ResultSet rs, int i) throws SQLException {
 		        	Table table = new Table();
 		        	table.setSchema(rs.getString("TABLE_SCHEMA"));
 		        	table.setName(rs.getString("TABLE_NAME"));
-		        	table.setColumns(getTargetColumns(table.getName()));
+		        	table.setColumns(getTargetColumns(table.getName(), jdbcTemplate));
 		        	
 				return  table;
 		        }
@@ -191,13 +199,13 @@ public class FieldsRepository {
 			return tables;
 		}
 	 
-	 public List<Column> getTargetColumns(String table) {
+	 public List<Column> getTargetColumns(String table,JdbcTemplate jdbcTemplate) {
 		 	String sql ="SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE  TABLE_NAME = '"+table+"'";
 			
 			//logger.info("column sql :"+sql);
 			List<Column> columns = new ArrayList<Column>(); 
 			try {
-				columns = jdbcTemplate2.query(sql,new RowMapper<Column>() {
+				columns = jdbcTemplate.query(sql,new RowMapper<Column>() {
 		        @Override
 		        public Column mapRow(ResultSet rs, int i) throws SQLException {
 		        	Column column = new Column();

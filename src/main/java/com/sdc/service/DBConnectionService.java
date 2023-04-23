@@ -3,7 +3,10 @@
  */
 package com.sdc.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.sdc.model.DbConnection;
 
@@ -20,5 +23,8 @@ public interface DBConnectionService {
 	int saveDbConnection(DbConnection dbConnection);
 
 	List<String> getDbConnectionNames();
+
+	JdbcTemplate jdbcTemplate(String driverClassName, String jdbcUrl, String username, String password)
+			throws IllegalAccessException, InvocationTargetException, InstantiationException;
 
 }
