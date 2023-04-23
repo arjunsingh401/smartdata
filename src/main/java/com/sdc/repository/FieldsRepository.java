@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -34,7 +35,7 @@ import com.sdc.model.DbConnection;
 @Repository
 public class FieldsRepository {
 
-	private static final Logger logger = LogManager.getLogger(FieldsRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger(FieldsRepository.class);
 	
 	 @Autowired
 	 @Qualifier("jdbcTemplate1")
@@ -50,16 +51,16 @@ public class FieldsRepository {
 	 
 	 @Autowired
 	 DBConnectionRepository dBConnectionRepository;
-	 
+
 	 @Autowired
 	 DBConnectionService dBConnectionService;
-	 
+
 	 public List<Schema> getSourceFields(String source) {
 		 	String sql ="SELECT name AS schema_name,  schema_id FROM sys.schemas ORDER BY name ";
 			
 			logger.info("schema sql :"+sql);
 			List<Schema> schemas = new ArrayList<Schema>(); 
-			
+
 			try {
 				DbConnection connection = dBConnectionRepository.getDbConnectionByName(source);
 				JdbcTemplate jdbcTemplate = dBConnectionService.jdbcTemplate(connection.getDriverclass(), connection.getUrl(), connection.getUsername(), connection.getPassword());
@@ -299,4 +300,38 @@ public class FieldsRepository {
 		}
 				return keyHolder.getKey().intValue();
 	 }
+
+	 public int updateJob(int jobId, int pendingRows, int pendingTime) {
+		 String sql = "UPDATE JOBS SET PENDING_ROWS=?, PENDING_TIME=? WHERE MAPPING_ID=?";
+		 logger.info("sql : "+sql);
+
+		 try {
+			 return jdbcTemplate3.update(connection -> {
+				 PreparedStatement ps = connection.prepareStatement(sql);
+				 ps.setLong(1, pendingRows);
+				 ps.setLong(2, pendingTime);
+				 ps.setInt(3, jobId);
+				 return ps;
+			 });
+		 }catch (Exception e) {
+			 logger.error("error ",e);
+		 }
+		 return 0;
+	 }
+
+	public Map<String, Object> getJob(int jobId) {
+		String sql = "SELECT MAPPING_ID, TOTAL_ROWS, PENDING_ROWS FROM JOBS WHERE ID=" + jobId;
+		logger.info("sql : "+sql);
+
+		try {
+			return jdbcTemplate3.queryForMap(sql);
+		}catch (Exception e) {
+			logger.error("error ",e);
+		}
+		return new HashMap<>();
+	}
+
+    public int getNumberOfRecords(String table1) {
+		return jdbcTemplate1.queryForObject("SELECT COUNT(*) FROM " + table1, Integer.class);
+    }
 }

@@ -3,17 +3,18 @@
  */
 package com.sdc.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.sdc.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
-import com.sdc.model.User;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * @author arjun
@@ -23,7 +24,7 @@ import com.sdc.model.User;
 @Repository
 public class UserRepository {
 
-	private static final Logger logger = LogManager.getLogger(UserRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 	
 	 @Autowired
 	 @Qualifier("jdbcTemplate3")
