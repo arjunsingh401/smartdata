@@ -22,12 +22,15 @@ public class MappingData implements Serializable {
 	private String name;
 	private String dataType;
 	private String length;
+	private String database;
 	
 	private String t_schema;
 	private String t_table;
 	private String t_name;
 	private String t_dataType;
 	private String t_length;
+	private String t_database;
+
 	public String getSchema() {
 		return schema;
 	}
@@ -93,5 +96,21 @@ public class MappingData implements Serializable {
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(String database) {
+		this.database = database;
+	}
+
+	public String getT_database() {
+		return t_database;
+	}
+
+	public void setT_database(String t_database) {
+		this.t_database = t_database;
 	}
 }

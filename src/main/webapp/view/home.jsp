@@ -198,19 +198,21 @@
 					});
 		  	}
 		  	
-		 	function Column(userId,schema, table, name, dataType, length,t_schema, t_table, t_name, t_dataType, t_length) {
+		 	function Column(userId,schema, table, name, dataType, length, database, t_schema, t_table, t_name, t_dataType, t_length, t_database) {
 				this.userId=userId;
 		 		this.schema = schema;
 				this.table = table;
 				this.name = name;
 				this.dataType = dataType;
 				this.length = length;
+				this.database = database;
 				
 				this.t_schema = t_schema;
 				this.t_table = t_table;
 				this.t_name = t_name;
 				this.t_dataType = t_dataType;
 				this.t_length = t_length;
+				this.t_database = t_database;
 			}
 			
 		 	function loadFields(){
@@ -321,7 +323,7 @@
 		 		    var sourceType =  $('#id_'+row+'_sdataType').val();
 				    var sourceLength = $('#id_'+row+'_slength').val();
 				    
-		 			var data = new Column(userId,sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
+		 			var data = new Column(userId,sourceSchema,sourceTable,sourceName,sourceType,sourceLength, '', destinationSchema,destinationTable,destinationName,destinationType,destinationLength, '');
 		 			arr.push(data);
 		 		});
 		
@@ -363,20 +365,22 @@
 		
 		            var sorValue = $('#'+sourceID).find(":selected").val();
 		            var tarValue = $('#'+destinationID).find(":selected").val();
-		
+
+		            var destinationDatabaseId = $('#targetDatabase').val();
 		            var destinationSchema = $('#targetSchema').find(":selected").val();
 		            var destinationTable = $('#targetTable').find(":selected").val();
 		            var destinationName = tarValue;
 		            var destinationType = $('#id_'+row+'_tdataType').val();
 		            var destinationLength = $('#id_'+row+'_tlength').val();
-		
+
+		            var sourceDatabaseId = $('#sourceDatabase').val();
 		            var sourceSchema = $('#schema').find(":selected").val();
 		            var sourceTable = $('#table').find(":selected").val();
 		            var sourceName = sorValue;
 		            var sourceType =  $('#id_'+row+'_sdataType').val();
 		            var sourceLength = $('#id_'+row+'_slength').val();
 					
-		            var data = new Column(userId,sourceSchema,sourceTable,sourceName,sourceType,sourceLength,destinationSchema,destinationTable,destinationName,destinationType,destinationLength);
+		            var data = new Column(userId,sourceSchema,sourceTable,sourceName,sourceType,sourceLength, sourceDatabaseId, destinationSchema,destinationTable,destinationName,destinationType,destinationLength, destinationDatabaseId);
 		            arr.push(data);
 		        });
 		

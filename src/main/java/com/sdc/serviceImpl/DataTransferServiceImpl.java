@@ -1,16 +1,19 @@
 package com.sdc.serviceImpl;
 
+import com.sdc.model.DbConnection;
 import com.sdc.model.MappingData;
+import com.sdc.repository.DBConnectionRepository;
 import com.sdc.repository.FieldsRepository;
 import com.sdc.service.DataTransferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -27,16 +30,15 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     private static final Logger logger = LoggerFactory.getLogger(DataTransferServiceImpl.class);
 
-    @Autowired
-    @Qualifier("jdbcTemplate1")
-    JdbcTemplate jdbcTemplate1;
+    JdbcTemplate jdbcTemplateSource;
 
-    @Autowired
-    @Qualifier("jdbcTemplate2")
-    JdbcTemplate jdbcTemplate2;
+    JdbcTemplate jdbcTemplateDestination;
 
     @Autowired
     FieldsRepository fieldsRepository;
+
+    @Autowired
+    DBConnectionRepository dbConnectionRepository;
     
     @Value("${database.insert.batch.size}")
     int batchSize;
@@ -48,39 +50,33 @@ public class DataTransferServiceImpl implements DataTransferService {
         String table1 = mappingData.get(0).getTable();
         logger.info("Select records from table: {}", table1);
 
+        jdbcTemplateSource = createJdbcTemplate(mappingData.get(0).getDatabase());
+        jdbcTemplateDestination = createJdbcTemplate(mappingData.get(0).getT_database());
+
         int records = fieldsRepository.getNumberOfRecords(table1);
 
         int jobId = fieldsRepository.saveJob(mappingId,Integer.parseInt(mappingData.get(0).getUserId()), records, 0, 0, 0);
 
-        InsertDataThread insertDataThread = new InsertDataThread(jobId, mappingData, fieldsRepository, jdbcTemplate1, jdbcTemplate2, batchSize);
+        InsertDataThread insertDataThread = new InsertDataThread(jobId, mappingData, fieldsRepository, jdbcTemplateSource, jdbcTemplateDestination, batchSize);
 
         insertDataThread.start();
 
-    	/*int mappingId = fieldsRepository.saveMappingData(mappingData);
-    	logger.info("mappingId : "+mappingId);
-    	
-        String table1 = mappingData.get(0).getTable();
-        logger.info("Select records from table: {}", table1);
+        logger.info("Data transfer thread started");
+    }
 
-        String selectSourceQuery = getSelectQuery(mappingData);
-        logger.info("Select query: {}", selectSourceQuery);
+    private JdbcTemplate createJdbcTemplate(String database) {
+        DataSource dataSource = getDataSource(database);
+        return new JdbcTemplate(dataSource);
+    }
 
-        List<Map<String, Object>> result = jdbcTemplate1.queryForList(selectSourceQuery);
-        logger.info("Records found: {}", result.size());
-        int jobId = fieldsRepository.saveJob(mappingId,Integer.parseInt(mappingData.get(0).getUserId()), result.size(), 0, 0, 0);
-        String table2 = mappingData.get(0).getT_table();
-
-        logger.info("Insert records into table: {}", table2);
-
-        int[][] updateCounts = jdbcTemplate2.batchUpdate(getInsertQuery(mappingData), result, batchSize, new ParameterizedPreparedStatementSetter<Map<String,Object>>() {
-            public void setValues(PreparedStatement ps, Map<String, Object>argument) throws SQLException {
-              setPreparedStatement(ps, argument);
-            }
-        });
-		  
-        logger.info("Inserted records: {}", updateCounts.length);*/
-		 
-        
+    private DataSource getDataSource(String database) {
+        DbConnection dbConnection = dbConnectionRepository.getDbConnectionByName(database);
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(dbConnection.getDriverclass());
+        dataSource.setUrl(dbConnection.getUrl());
+        dataSource.setUsername(dbConnection.getUsername());
+        dataSource.setPassword(dbConnection.getPassword());
+        return dataSource;
     }
 
     private void setPreparedStatement(PreparedStatement ps, Map<String, Object> argument) throws SQLException {

@@ -20,9 +20,9 @@ public class InsertDataThread extends Thread{
     private static final Logger logger = LoggerFactory.getLogger(InsertDataThread.class);
     private static final Logger fileLogger = LoggerFactory.getLogger("file");
 
-    JdbcTemplate jdbcTemplate1;
+    JdbcTemplate jdbcTemplateSource;
 
-    JdbcTemplate jdbcTemplate2;
+    JdbcTemplate jdbcTemplateDestination;
 
     FieldsRepository fieldsRepository;
 
@@ -32,12 +32,12 @@ public class InsertDataThread extends Thread{
 
     int jobId;
 
-    public InsertDataThread(int jobId, List<MappingData> mappingData, FieldsRepository fieldsRepository, JdbcTemplate jdbcTemplate1, JdbcTemplate jdbcTemplate2, int batchSize) {
+    public InsertDataThread(int jobId, List<MappingData> mappingData, FieldsRepository fieldsRepository, JdbcTemplate jdbcTemplateSource, JdbcTemplate jdbcTemplateDestination, int batchSize) {
         this.jobId = jobId;
         this.mappingData = mappingData;
         this.fieldsRepository = fieldsRepository;
-        this.jdbcTemplate1 = jdbcTemplate1;
-        this.jdbcTemplate2 = jdbcTemplate2;
+        this.jdbcTemplateSource = jdbcTemplateSource;
+        this.jdbcTemplateDestination = jdbcTemplateDestination;
         this.batchSize = batchSize;
     }
 
@@ -60,21 +60,21 @@ public class InsertDataThread extends Thread{
         for (int i=0; i<numberOfBatches; i++) {
 
             try {
-                jdbcTemplate1.setMaxRows(batchSize);
+                jdbcTemplateSource.setMaxRows(batchSize);
                 int offset = batchSize * i;
                 int rows = batchSize;
                 selectOffsetQuery = selectSourceQuery
                         .replace("<offset>", String.valueOf(offset)).replace("<rows>", String.valueOf(rows));
                 logger.info("Select query: {}", selectOffsetQuery);
 
-                List<Map<String, Object>> result = jdbcTemplate1.queryForList(selectOffsetQuery);
+                List<Map<String, Object>> result = jdbcTemplateSource.queryForList(selectOffsetQuery);
                 logger.info("Records found: {}", result.size());
 
                 String table2 = mappingData.get(0).getT_table();
 
                 logger.info("Insert records into table: {}", table2);
 
-                int[][] updateCounts = jdbcTemplate2.batchUpdate(getInsertQuery(mappingData), result, batchSize, new ParameterizedPreparedStatementSetter<Map<String,Object>>() {
+                int[][] updateCounts = jdbcTemplateDestination.batchUpdate(getInsertQuery(mappingData), result, batchSize, new ParameterizedPreparedStatementSetter<Map<String,Object>>() {
                     public void setValues(PreparedStatement ps, Map<String, Object>argument) throws SQLException {
                         setPreparedStatement(ps, argument);
                     }
