@@ -32,17 +32,23 @@ public class InsertDataThread extends Thread{
 
     int jobId;
 
-    public InsertDataThread(int jobId, List<MappingData> mappingData, FieldsRepository fieldsRepository, JdbcTemplate jdbcTemplateSource, JdbcTemplate jdbcTemplateDestination, int batchSize) {
+    String threadName;
+
+    public InsertDataThread(int jobId, List<MappingData> mappingData, FieldsRepository fieldsRepository,
+                            JdbcTemplate jdbcTemplateSource,
+                            JdbcTemplate jdbcTemplateDestination, int batchSize, String threadName) {
         this.jobId = jobId;
         this.mappingData = mappingData;
         this.fieldsRepository = fieldsRepository;
         this.jdbcTemplateSource = jdbcTemplateSource;
         this.jdbcTemplateDestination = jdbcTemplateDestination;
         this.batchSize = batchSize;
+        this.threadName = threadName;
     }
 
     @Override
     public void run() {
+        currentThread().setName(threadName);
 
         String table1 = mappingData.get(0).getTable();
         logger.info("Select records from table: {}", table1);
@@ -53,10 +59,14 @@ public class InsertDataThread extends Thread{
         Map<String, Object> job = fieldsRepository.getJob(jobId);
 
         BigDecimal totalRecords = (BigDecimal) job.get("TOTAL_ROWS");
-        int numberOfBatches = (totalRecords.intValue()/batchSize) + (totalRecords.intValue() % batchSize);
+        long numberOfBatches = (totalRecords.longValue()/batchSize) + (totalRecords.longValue() % batchSize);
         int pendingRecords = totalRecords.intValue();
 
+        BigDecimal failedRecords = (BigDecimal) job.get("FAILED_RECORDS");
+        long totalFailed = failedRecords.longValue();
+
         String selectOffsetQuery;
+        List<Map<String, Object>> result = null;
         for (int i=0; i<numberOfBatches; i++) {
 
             try {
@@ -67,7 +77,7 @@ public class InsertDataThread extends Thread{
                         .replace("<offset>", String.valueOf(offset)).replace("<rows>", String.valueOf(rows));
                 logger.info("Select query: {}", selectOffsetQuery);
 
-                List<Map<String, Object>> result = jdbcTemplateSource.queryForList(selectOffsetQuery);
+                result = jdbcTemplateSource.queryForList(selectOffsetQuery);
                 logger.info("Records found: {}", result.size());
 
                 String table2 = mappingData.get(0).getT_table();
@@ -83,12 +93,15 @@ public class InsertDataThread extends Thread{
                 //add failure logs with error message
                 logger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
                 fileLogger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
-                fieldsRepository.updateJob(jobId, (pendingRecords -= result.size()), 0);
+                fieldsRepository.updateJob(jobId, (pendingRecords -= result.size()), 0, "RUNNING");
             } catch (Exception e) {
                 fileLogger.error("Error inserting data: {}", e.getMessage());
                 logger.error("Exception occurred: {}", e.getMessage());
+                totalFailed += result.size();
+                fieldsRepository.updateFailedRecords(jobId, totalFailed);
             }
         }
+        fieldsRepository.updateJob(jobId, 0, 0, "COMPLETED");
     }
 
     private void setPreparedStatement(PreparedStatement ps, Map<String, Object> argument) throws SQLException {

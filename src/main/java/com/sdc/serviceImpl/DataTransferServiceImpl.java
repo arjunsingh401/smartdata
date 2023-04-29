@@ -48,6 +48,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         int mappingId = fieldsRepository.saveMappingData(mappingData);
         logger.info("mappingId : " + mappingId);
         String table1 = mappingData.get(0).getTable();
+        String table2 = mappingData.get(0).getT_table();
         logger.info("Select records from table: {}", table1);
 
         jdbcTemplateSource = createJdbcTemplate(mappingData.get(0).getDatabase());
@@ -55,9 +56,11 @@ public class DataTransferServiceImpl implements DataTransferService {
 
         int records = fieldsRepository.getNumberOfRecords(table1);
 
-        int jobId = fieldsRepository.saveJob(mappingId,Integer.parseInt(mappingData.get(0).getUserId()), records, 0, 0, 0);
+        int jobId = fieldsRepository.saveJob(mappingId, table1 + "-to-" + table2, table1 + "-to-" + table2, Integer.parseInt(mappingData.get(0).getUserId()),
+                records, 0, 0, 0);
 
-        InsertDataThread insertDataThread = new InsertDataThread(jobId, mappingData, fieldsRepository, jdbcTemplateSource, jdbcTemplateDestination, batchSize);
+        InsertDataThread insertDataThread = new InsertDataThread(jobId, mappingData, fieldsRepository,
+                jdbcTemplateSource, jdbcTemplateDestination, batchSize, table1 + "-to-" + table2);
 
         insertDataThread.start();
 

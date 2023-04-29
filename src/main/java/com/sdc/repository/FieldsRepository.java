@@ -284,10 +284,10 @@ public class FieldsRepository {
 				return keyHolder.getKey().intValue();
 	 }
 
-	 public int saveJob(int mappingId,int userId,int totalRows,int totalTime,int pendingRows,int pendingTime) {
+	 public int saveJob(int mappingId,String name, String description, int userId,int totalRows,int totalTime,int pendingRows,int pendingTime) {
 		 
-		 String sql="INSERT INTO JOBS (MAPPING_ID, NAME, DESCRIPTION, TOTAL_ROWS, TOTAL_TIME, PENDING_ROWS, PENDING_TIME, CREATED_BY, CREATED, UPDATED_BY, UPDATED) "		 		
-		 		+ " VALUES ("+mappingId+", null, null, "+totalRows+", "+totalTime+", "+pendingRows+", "+pendingTime+", "+userId+", CURRENT_TIMESTAMP, "+userId+", CURRENT_TIMESTAMP) ";
+		 String sql="INSERT INTO JOBS (MAPPING_ID, NAME, DESCRIPTION, TOTAL_ROWS, TOTAL_TIME, PENDING_ROWS, PENDING_TIME, CREATED_BY, CREATED, UPDATED_BY, UPDATED, STATUS, FAILED_RECORDS) "
+		 		+ " VALUES ("+mappingId+", '" + name +"', '" + description + "', "+totalRows+", "+totalTime+", "+pendingRows+", "+pendingTime+", "+userId+", CURRENT_TIMESTAMP, "+userId+", CURRENT_TIMESTAMP, 'CREATED', 0) ";
 		 logger.info("sql : "+sql);
 		 KeyHolder keyHolder = new GeneratedKeyHolder();
 		 try {
@@ -301,8 +301,8 @@ public class FieldsRepository {
 				return keyHolder.getKey().intValue();
 	 }
 
-	 public int updateJob(int jobId, int pendingRows, int pendingTime) {
-		 String sql = "UPDATE JOBS SET PENDING_ROWS=?, PENDING_TIME=? WHERE MAPPING_ID=?";
+	 public int updateJob(int jobId, int pendingRows, int pendingTime, String status) {
+		 String sql = "UPDATE JOBS SET PENDING_ROWS=?, PENDING_TIME=?, STATUS=?, UPDATED=CURRENT_TIMESTAMP WHERE ID=?";
 		 logger.info("sql : "+sql);
 
 		 try {
@@ -310,7 +310,8 @@ public class FieldsRepository {
 				 PreparedStatement ps = connection.prepareStatement(sql);
 				 ps.setLong(1, pendingRows);
 				 ps.setLong(2, pendingTime);
-				 ps.setInt(3, jobId);
+				 ps.setString(3, status);
+				 ps.setInt(4, jobId);
 				 return ps;
 			 });
 		 }catch (Exception e) {
@@ -320,8 +321,8 @@ public class FieldsRepository {
 	 }
 
 	public Map<String, Object> getJob(int jobId) {
-		String sql = "SELECT MAPPING_ID, TOTAL_ROWS, PENDING_ROWS FROM JOBS WHERE ID=" + jobId;
-		logger.info("sql : "+sql);
+		String sql = "SELECT MAPPING_ID, TOTAL_ROWS, PENDING_ROWS, FAILED_RECORDS FROM JOBS WHERE ID=" + jobId;
+		logger.info("sql : " + sql);
 
 		try {
 			return jdbcTemplate3.queryForMap(sql);
@@ -334,4 +335,21 @@ public class FieldsRepository {
     public int getNumberOfRecords(String table1) {
 		return jdbcTemplate1.queryForObject("SELECT COUNT(*) FROM " + table1, Integer.class);
     }
+
+	public int updateFailedRecords(int jobId, long failedRecords) {
+		 String sql = "UPDATE JOBS SET FAILED_RECORDS=?, UPDATED=CURRENT_TIMESTAMP WHERE ID=?";
+		 logger.info("sql: " + sql);
+
+		 try {
+			 return jdbcTemplate3.update(connection -> {
+				 PreparedStatement ps = connection.prepareStatement(sql);
+				 ps.setLong(1, failedRecords);
+				 ps.setInt(2, jobId);
+				 return ps;
+			 });
+		 } catch (Exception e) {
+			 logger.error("error ",e);
+		 }
+		 return 0;
+	}
 }
