@@ -65,6 +65,7 @@ public class InsertDataThread extends Thread{
 
         BigDecimal failedRecords = (BigDecimal) job.get("FAILED_RECORDS");
         long totalFailed = failedRecords.longValue();
+        long currentFailed = 0l;
 
         String selectOffsetQuery;
         String status;
@@ -88,29 +89,47 @@ public class InsertDataThread extends Thread{
 
                 String table2 = mappingData.get(0).getT_table();
 
+                fieldsRepository.updateJob(jobId, (pendingRecords -= result.size()), 0, BatchStatus.RUNNING.toString());
+
                 logger.info("Insert records into table: {}", table2);
 
-                int[][] updateCounts = jdbcTemplateDestination.batchUpdate(getInsertQuery(mappingData), result, batchSize, new ParameterizedPreparedStatementSetter<Map<String,Object>>() {
-                    public void setValues(PreparedStatement ps, Map<String, Object>argument) throws SQLException {
-                        setPreparedStatement(ps, argument);
-                    }
-                });
+                currentFailed = insertRecords(jdbcTemplateDestination, result);
+
+                if (currentFailed > 0) {
+                    totalFailed += currentFailed;
+                    fieldsRepository.updateFailedRecords(jobId, totalFailed);
+                }
 
                 //add failure logs with error message
                 logger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
-                fileLogger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
-                fieldsRepository.updateJob(jobId, (pendingRecords -= result.size()), 0, BatchStatus.RUNNING.toString());
+                //fileLogger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
+
             } catch (Exception e) {
                 fileLogger.error("Error inserting data: {}", e.getMessage());
                 logger.error("Exception occurred: {}", e.getMessage());
-                totalFailed += result.size();
-                fieldsRepository.updateFailedRecords(jobId, totalFailed);
             }
         }
         fieldsRepository.updateJob(jobId, 0, 0, BatchStatus.COMPLETED.toString());
     }
 
-    private void setPreparedStatement(PreparedStatement ps, Map<String, Object> argument) throws SQLException {
+    private long insertRecords(JdbcTemplate jdbcTemplateDestination, List<Map<String, Object>> result) {
+        long failed = 0l;
+        for (int i=0; i< result.size(); i++) {
+            Map<String, Object> argument = result.get(i);
+            try {
+                jdbcTemplateDestination.update(connection -> {
+                    PreparedStatement ps = connection.prepareStatement(getInsertQuery(mappingData));
+                    return setPreparedStatement(ps, argument);
+                });
+            } catch (Exception e) {
+                failed += 1l;
+                fileLogger.error("Error: " + e.getMessage());
+            }
+        }
+        return failed;
+    }
+
+    private PreparedStatement setPreparedStatement(PreparedStatement ps, Map<String, Object> argument) throws SQLException {
         Set<String> columns = argument.keySet();
         int index = 1;
 
@@ -119,6 +138,7 @@ public class InsertDataThread extends Thread{
             ps.setObject(index, argument.get(col));
             index++;
         }
+        return ps;
     }
 
     private String getSelectQuery(List<MappingData> mappingData) {

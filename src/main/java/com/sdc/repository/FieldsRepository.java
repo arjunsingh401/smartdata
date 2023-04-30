@@ -333,8 +333,8 @@ public class FieldsRepository {
 		return new HashMap<>();
 	}
 
-    public int getNumberOfRecords(String table1) {
-		return jdbcTemplate1.queryForObject("SELECT COUNT(*) FROM " + table1, Integer.class);
+    public int getNumberOfRecords(String table1, JdbcTemplate jdbcTemplateSource) {
+		return jdbcTemplateSource.queryForObject("SELECT COUNT(*) FROM " + table1, Integer.class);
     }
 
 	public int updateFailedRecords(int jobId, long failedRecords) {

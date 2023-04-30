@@ -54,7 +54,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         jdbcTemplateSource = createJdbcTemplate(mappingData.get(0).getDatabase());
         jdbcTemplateDestination = createJdbcTemplate(mappingData.get(0).getT_database());
 
-        int records = fieldsRepository.getNumberOfRecords(table1);
+        int records = fieldsRepository.getNumberOfRecords(table1, jdbcTemplateSource);
 
         int jobId = fieldsRepository.saveJob(mappingId, table1 + "-to-" + table2, table1 + "-to-" + table2, Integer.parseInt(mappingData.get(0).getUserId()),
                 records, 0, 0, 0);
