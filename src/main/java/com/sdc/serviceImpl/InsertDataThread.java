@@ -65,14 +65,14 @@ public class InsertDataThread extends Thread{
                 int rows = batchSize;
                 selectOffsetQuery = selectSourceQuery
                         .replace("<offset>", String.valueOf(offset)).replace("<rows>", String.valueOf(rows));
-                logger.info("Select query: {}", selectOffsetQuery);
+              //  logger.info("Select query: {}", selectOffsetQuery);
 
                 List<Map<String, Object>> result = jdbcTemplateSource.queryForList(selectOffsetQuery);
                 logger.info("Records found: {}", result.size());
 
                 String table2 = mappingData.get(0).getT_table();
 
-                logger.info("Insert records into table: {}", table2);
+                //logger.info("Insert records into table: {}", table2);
 
                 int[][] updateCounts = jdbcTemplateDestination.batchUpdate(getInsertQuery(mappingData), result, batchSize, new ParameterizedPreparedStatementSetter<Map<String,Object>>() {
                     public void setValues(PreparedStatement ps, Map<String, Object>argument) throws SQLException {
@@ -81,8 +81,8 @@ public class InsertDataThread extends Thread{
                 });
 
                 //add failure logs with error message
-                logger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
-                fileLogger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
+               // logger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
+              //  fileLogger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
                 fieldsRepository.updateJob(jobId, (pendingRecords -= result.size()), 0);
             } catch (Exception e) {
                 fileLogger.error("Error inserting data: {}", e.getMessage());
@@ -96,7 +96,7 @@ public class InsertDataThread extends Thread{
         int index = 1;
 
         for(String col: columns) {
-            logger.info("index : "+index+" col : "+col+" value : "+argument.get(col));
+           // logger.info("index : "+index+" col : "+col+" value : "+argument.get(col));
             ps.setObject(index, argument.get(col));
             index++;
         }
@@ -148,7 +148,7 @@ public class InsertDataThread extends Thread{
 
         queryBuilder.append(columnBuilder).append(parameterBuilder);
 
-        logger.info("Insert query: {}", queryBuilder);
+       // logger.info("Insert query: {}", queryBuilder);
 
         return  queryBuilder.toString();
     }

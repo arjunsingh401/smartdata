@@ -26,6 +26,6 @@ public class DataTransferController {
 
         dataTransferService.startDataTransfer(mappingData);
 
-        return "Data transferred started successfully";
+        return "Data transfer started";
     }
 }

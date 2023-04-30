@@ -302,7 +302,7 @@ public class FieldsRepository {
 	 }
 
 	 public int updateJob(int jobId, int pendingRows, int pendingTime) {
-		 String sql = "UPDATE JOBS SET PENDING_ROWS=?, PENDING_TIME=? WHERE MAPPING_ID=?";
+		 String sql = "UPDATE JOBS SET PENDING_ROWS=?, PENDING_TIME=? WHERE ID=?";
 		 logger.info("sql : "+sql);
 
 		 try {
