@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sdc.BatchStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -287,7 +288,7 @@ public class FieldsRepository {
 	 public int saveJob(int mappingId,String name, String description, int userId,int totalRows,int totalTime,int pendingRows,int pendingTime) {
 		 
 		 String sql="INSERT INTO JOBS (MAPPING_ID, NAME, DESCRIPTION, TOTAL_ROWS, TOTAL_TIME, PENDING_ROWS, PENDING_TIME, CREATED_BY, CREATED, UPDATED_BY, UPDATED, STATUS, FAILED_RECORDS) "
-		 		+ " VALUES ("+mappingId+", '" + name +"', '" + description + "', "+totalRows+", "+totalTime+", "+pendingRows+", "+pendingTime+", "+userId+", CURRENT_TIMESTAMP, "+userId+", CURRENT_TIMESTAMP, 'CREATED', 0) ";
+		 		+ " VALUES ("+mappingId+", '" + name +"', '" + description + "', "+totalRows+", "+totalTime+", "+pendingRows+", "+pendingTime+", "+userId+", CURRENT_TIMESTAMP, "+userId+", CURRENT_TIMESTAMP, '" + BatchStatus.CREATED + "', 0) ";
 		 logger.info("sql : "+sql);
 		 KeyHolder keyHolder = new GeneratedKeyHolder();
 		 try {
@@ -351,5 +352,17 @@ public class FieldsRepository {
 			 logger.error("error ",e);
 		 }
 		 return 0;
+	}
+
+	public String getJobStatus(int jobId) {
+		String sql = "SELECT STATUS FROM JOBS WHERE ID=" + jobId;
+		logger.info("sql : " + sql);
+
+		try {
+			return jdbcTemplate3.queryForObject(sql, String.class);
+		}catch (Exception e) {
+			logger.error("error ",e);
+		}
+		return "";
 	}
 }

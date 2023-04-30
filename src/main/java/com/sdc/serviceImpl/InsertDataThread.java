@@ -1,5 +1,6 @@
 package com.sdc.serviceImpl;
 
+import com.sdc.BatchStatus;
 import com.sdc.model.MappingData;
 import com.sdc.repository.FieldsRepository;
 import org.slf4j.Logger;
@@ -66,10 +67,15 @@ public class InsertDataThread extends Thread{
         long totalFailed = failedRecords.longValue();
 
         String selectOffsetQuery;
+        String status;
         List<Map<String, Object>> result = null;
         for (int i=0; i<numberOfBatches; i++) {
-
             try {
+                status = fieldsRepository.getJobStatus(jobId);
+                if (BatchStatus.TERMINATED.toString().equalsIgnoreCase(status)) {
+                    return;
+                }
+
                 jdbcTemplateSource.setMaxRows(batchSize);
                 int offset = batchSize * i;
                 int rows = batchSize;
@@ -93,7 +99,7 @@ public class InsertDataThread extends Thread{
                 //add failure logs with error message
                 logger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
                 fileLogger.info("Records processed: {}/{}", (batchSize * (i + 1)), totalRecords);
-                fieldsRepository.updateJob(jobId, (pendingRecords -= result.size()), 0, "RUNNING");
+                fieldsRepository.updateJob(jobId, (pendingRecords -= result.size()), 0, BatchStatus.RUNNING.toString());
             } catch (Exception e) {
                 fileLogger.error("Error inserting data: {}", e.getMessage());
                 logger.error("Exception occurred: {}", e.getMessage());
@@ -101,7 +107,7 @@ public class InsertDataThread extends Thread{
                 fieldsRepository.updateFailedRecords(jobId, totalFailed);
             }
         }
-        fieldsRepository.updateJob(jobId, 0, 0, "COMPLETED");
+        fieldsRepository.updateJob(jobId, 0, 0, BatchStatus.COMPLETED.toString());
     }
 
     private void setPreparedStatement(PreparedStatement ps, Map<String, Object> argument) throws SQLException {

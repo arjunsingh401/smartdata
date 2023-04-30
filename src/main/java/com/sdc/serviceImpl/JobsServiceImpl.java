@@ -31,4 +31,14 @@ public class JobsServiceImpl implements JobsService {
 		}
 		return jobs;
 	}
+
+	@Override
+	public int stopJob(String jobId) {
+		try {
+			return jobsRepository.stopJob(jobId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 }

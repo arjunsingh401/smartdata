@@ -34,33 +34,39 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-lg-12">
-					<table class="table" cellspacing="0">
-		               <thead>
-		                   <tr>
-		                       <th>Job Id</th>
-		                       <th>Description</th>
-		                       <th>Total Rows</th>
-		                       <th>Pending Rows</th>
-		                       <th>Status </th>
-		                       <th>&nbsp; </th>
-		                   </tr>
-		               </thead>
-		               <tbody>
-		               		<%
-		               		 	for(int a=0;a<jobs.size();a++){
-		               		 	Jobs job = (Jobs)jobs.get(a);
-		               		 %>
-		               		<tr>
-		                       <td  width="5%"><%=job.getId()%></td>
-		                       <td  width="35%"><%=job.getDescription()%></td>
-		                       <td  width="10%"><%=job.getTotalRows()%></td>
-		                       <td  width="20%"><%=job.getPendingRows()%></td>
-		                       <td  width="15%">&nbsp;</td>
-		                       <td  width="15%">&nbsp;</td>
-		                   </tr> 
-		               		<%  } %>
-		               </tbody>
-		           </table>
+				    <form action="">
+                        <table id="dataTable" class="table" cellspacing="0">
+                           <thead>
+                               <tr>
+                                   <th>Job Id</th>
+                                   <th>Description</th>
+                                   <th>Total Records</th>
+                                   <th>Pending Records</th>
+                                   <th>Failed Records</th>
+                                   <th>Last Updated</th>
+                                   <th>Status</th>
+                                   <th>Action</th>
+                               </tr>
+                           </thead>
+                           <tbody id ="body">
+                                <%
+                                    for(int a=0;a<jobs.size();a++){
+                                    Jobs job = (Jobs)jobs.get(a);
+                                 %>
+                                <tr>
+                                   <td  width="5%"><%=job.getId()%></td>
+                                   <td  width="35%"><%=job.getDescription()%></td>
+                                   <td  width="10%"><%=job.getTotalRows()%></td>
+                                   <td  width="10%"><%=job.getPendingRows()%></td>
+                                   <td  width="10%"><%=job.getFailedRecords()%></td>
+                                   <td  width="10%"><%=job.getUpdated()%></td>
+                                   <td  width="15%"><%=job.getStatus()%></td>
+                                   <td  width="15%"><button type="button" class="btn btn-primary" onclick="stopJob(<%=job.getId()%>)">Terminate</button></td>
+                               </tr>
+                                <%  } %>
+                           </tbody>
+                       </table>
+                    </form>
 		          </div>
 	         </div>
 		</div>
@@ -70,5 +76,37 @@
 	    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+	    <script>
+	        function stopJob(jobId) {
+	            $.ajax({
+	                type: 'POST',
+                    url: "${pageContext.request.contextPath}/stop/" + jobId,
+                    success: function(data) {
+                        alert('Job terminated successfully!!');
+                        console.log(data);
+                        $('#body').empty();
+                        $.each(data, function (index, value) {
+                        var tr = '<tr>'
+                                + '<td  width="5%">' + value.id + '</td>'
+                                + '<td  width="35%">' + value.description + '</td>'
+                                + '<td  width="10%">' + value.totalRows + '</td>'
+                                + '<td  width="10%">' + value.pendingRows + '</td>'
+                                + '<td  width="10%">' + value.failedRecords + '</td>'
+                                + '<td  width="10%">' + value.updated + '</td>'
+                                + '<td  width="15%">' + value.status + '</td>'
+                                + '<td  width="15%"><button type="button" class="btn btn-primary" onclick="stopJob(' + value.id + ')">Terminate</button></td>'
+                                + '</tr>'
+                            $('#body').append(tr);
+                        });
+
+                    },
+                    error : function(xhr, ajaxOptions, thrownError) {
+                        alert('Unable to terminate the job.');
+                    }
+                });
+            }
+
+	    </script>
 	</body>
 </html>

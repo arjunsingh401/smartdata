@@ -20,11 +20,16 @@ public class Jobs {
 	private String sourceDbName;
 	private String targetDbName;
 	private String createdBy;
+	private String updated;
+	private String status;
+
+	private long failedRecords;
+
 	public Jobs() {
 		super();
 	}
 	public Jobs(int id, String name, String description, String totalRows, String totalTime, String pendingRows,
-			String pendingTime, String sourceDbName, String targetDbName, String createdBy) {
+			String pendingTime, String sourceDbName, String targetDbName, String createdBy, String status) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -36,6 +41,7 @@ public class Jobs {
 		this.sourceDbName = sourceDbName;
 		this.targetDbName = targetDbName;
 		this.createdBy = createdBy;
+		this.status = status;
 	}
 	public int getId() {
 		return id;
@@ -97,5 +103,28 @@ public class Jobs {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(String updated) {
+		this.updated = updated;
+	}
+
+	public long getFailedRecords() {
+		return failedRecords;
+	}
+
+	public void setFailedRecords(long failedRecords) {
+		this.failedRecords = failedRecords;
+	}
 }
