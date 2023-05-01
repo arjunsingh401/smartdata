@@ -15,4 +15,6 @@ public interface JobsService {
 
 	List<Jobs> getJobs();
 
+	int stopJob(String jobId);
+
 }

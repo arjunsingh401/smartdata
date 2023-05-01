@@ -3,13 +3,15 @@
  */
 package com.sdc.repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.sdc.BatchStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,14 +29,14 @@ import com.sdc.model.Jobs;
 @Repository
 public class JobsRepository {
 
-	private static final Logger logger = LogManager.getLogger(JobsRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger(JobsRepository.class);
 	
 	 @Autowired
 	 @Qualifier("jdbcTemplate3")
 	 private JdbcTemplate jdbcTemplate3;
 	
 	 public List<Jobs> getJobs() {
-		 	String sql ="select J.ID,  J.NAME,  MF.SOURCE_SCHEMA_NAME+'.'+MF.SOURCE_TABLE_NAME+' ---> '+MF.TARGET_SCHEMA_NAME+'.'+MF.TARGET_TABLE_NAME as DESCRIPTION, J.TOTAL_ROWS, J.TOTAL_TIME, J.PENDING_ROWS, J.PENDING_TIME, J.CREATED_BY,MF.SOURCE_SCHEMA_NAME,TARGET_SCHEMA_NAME from JOBS J JOIN MAPPING_FIELDS MF ON MF.ID=J.MAPPING_ID ORDER BY J.ID DESC";		 			
+		 	String sql ="select ID, NAME, DESCRIPTION, TOTAL_ROWS, PENDING_ROWS, FAILED_RECORDS, UPDATED, STATUS from JOBS ORDER BY ID DESC";
 			
 			logger.info(" sql :"+sql);
 			List<Jobs> jobs = new ArrayList<Jobs>(); 
@@ -48,13 +50,15 @@ public class JobsRepository {
 		        	jobs.setName(rs.getString("NAME"));
 		        	jobs.setDescription(rs.getString("DESCRIPTION"));
 		        	jobs.setTotalRows(rs.getString("TOTAL_ROWS"));
-		        	jobs.setTotalTime(rs.getString("TOTAL_TIME"));
+		        	//jobs.setTotalTime(rs.getString("TOTAL_TIME"));
 		        	jobs.setPendingRows(rs.getString("PENDING_ROWS"));
-		        	jobs.setPendingTime(rs.getString("PENDING_TIME"));
-		        	jobs.setCreatedBy(rs.getString("CREATED_BY"));
-		        	jobs.setSourceDbName(rs.getString("SOURCE_SCHEMA_NAME"));
-		        	jobs.setTargetDbName(rs.getString("TARGET_SCHEMA_NAME"));
-		        	
+		        	//jobs.setPendingTime(rs.getString("PENDING_TIME"));
+		        	//jobs.setCreatedBy(rs.getString("CREATED_BY"));
+		        	//jobs.setSourceDbName(rs.getString("SOURCE_SCHEMA_NAME"));
+		        	//jobs.setTargetDbName(rs.getString("TARGET_SCHEMA_NAME"));
+					jobs.setUpdated(rs.getString("UPDATED"));
+					jobs.setStatus(rs.getString("STATUS"));
+					jobs.setFailedRecords(rs.getLong("FAILED_RECORDS"));
 				return  jobs;
 		        }
 		    });
@@ -67,5 +71,22 @@ public class JobsRepository {
 			}
 			return jobs;
 		}
-	
+
+	public int stopJob(String jobId) {
+		 String sql = "UPDATE JOBS SET STATUS='" + BatchStatus.TERMINATED + "' WHERE ID=?";
+		 logger.info(" sql :"+sql);
+
+		try {
+			return jdbcTemplate3.update(connection -> {
+				PreparedStatement ps = connection.prepareStatement(sql);
+				ps.setString(1, jobId);
+				return ps;
+			});
+		}catch (Exception e) {
+			logger.error("error ",e);
+		}
+		return 0;
+
+
+	}
 }
