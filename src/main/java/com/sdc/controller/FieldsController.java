@@ -29,7 +29,7 @@ import com.sdc.service.FieldsService;
 @RestController
 public class FieldsController {
 
-	private static final Logger logger = LoggerFactory.getLogger(FieldsController.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	@Autowired
 	FieldsService fieldsService;

@@ -34,7 +34,7 @@ import com.sdc.model.User;
 @Repository
 public class DBConnectionRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger(FieldsRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	 @Autowired
 	 @Qualifier("jdbcTemplate3")

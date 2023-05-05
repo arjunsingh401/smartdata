@@ -5,27 +5,27 @@
         </encoder>
     </appender>
 
-    <property name="LOG_FILE" value="LogFile" />
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_FILE}.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
-
-            <!-- keep 30 days' worth of history capped at 3GB total size -->
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>logFileName</key>
+            <defaultValue>unknown</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="FILE-${logFileName}" class="ch.qos.logback.core.FileAppender">
+                <file>C:\Users\Public\Documents\smartdata\${logFileName}.log</file>
+                <append>true</append>
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                    <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+                </layout>
+            </appender>
+        </sift>
     </appender>
 
     <logger name="file" level="WARN" additivity="false" >
-        <appender-ref ref="FILE" />
+        <appender-ref ref="SIFT" />
     </logger>
 
-    <root level="debug">
+    <logger name="console" level="debug" additivity="false" >
         <appender-ref ref="STDOUT" />
-    </root>
+    </logger>
 </configuration>

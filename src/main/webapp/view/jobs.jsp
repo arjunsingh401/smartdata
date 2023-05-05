@@ -17,6 +17,7 @@
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 		<link href="${pageContext.request.contextPath}/css/common.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 	<body>
 		<jsp:include page="header.jsp">
@@ -55,13 +56,16 @@
                                  %>
                                 <tr>
                                    <td  width="5%"><%=job.getId()%></td>
-                                   <td  width="35%"><%=job.getDescription()%></td>
+                                   <td  width="30%"><%=job.getDescription()%></td>
                                    <td  width="10%"><%=job.getTotalRows()%></td>
                                    <td  width="10%"><%=job.getPendingRows()%></td>
                                    <td  width="10%"><%=job.getFailedRecords()%></td>
                                    <td  width="10%"><%=job.getUpdated()%></td>
                                    <td  width="15%"><%=job.getStatus()%></td>
-                                   <td  width="15%"><button type="button" class="btn btn-primary" onclick="stopJob(<%=job.getId()%>)">Terminate</button></td>
+                                   <td  width="10%">
+                                        <button type="button" class="btn btn-success" data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(<%=job.getId()%>)"><i class="fas fa-play"></i></button>
+                                        <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(<%=job.getId()%>)"><i class="fas fa-stop-circle"></i></button>
+                                   </td>
                                </tr>
                                 <%  } %>
                            </tbody>

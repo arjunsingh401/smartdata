@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 public class FieldsServiceImpl implements FieldsService {
 
-	private static final Logger logger = LoggerFactory.getLogger(FieldsServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	@Autowired
 	FieldsRepository fieldRepository;

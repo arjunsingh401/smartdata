@@ -28,7 +28,7 @@ import com.sdc.service.DBConnectionService;
 @Service
 public class DBConnectionServiceImpl implements DBConnectionService {
 
-	private static final Logger logger = LoggerFactory.getLogger(DBConnectionServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	@Autowired
 	DBConnectionRepository dBConnectionRepository;

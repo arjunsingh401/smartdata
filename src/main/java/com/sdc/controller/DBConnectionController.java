@@ -31,7 +31,7 @@ import com.sdc.service.UserService;
 @RestController
 public class DBConnectionController {
 
-	private static final Logger logger = LoggerFactory.getLogger(DBConnectionController.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	@Autowired
 	HttpSession session;

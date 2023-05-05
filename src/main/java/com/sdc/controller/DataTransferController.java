@@ -15,13 +15,13 @@ import java.util.List;
 @RestController
 public class DataTransferController {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataTransferController.class);
+    private static final Logger logger = LoggerFactory.getLogger("console");
 
     @Autowired
     DataTransferService dataTransferService;
 
     @RequestMapping(value = "/startDataTransfer", method = RequestMethod.POST)
-    public String startDataTransfer(@RequestBody List<MappingData> mappingData) {
+    public String startDataTransfer(@RequestBody List<MappingData> mappingData) throws InterruptedException {
         logger.info("Started data transfer with mapping {}", mappingData);
 
         dataTransferService.startDataTransfer(mappingData);

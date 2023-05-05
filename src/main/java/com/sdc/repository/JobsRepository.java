@@ -29,7 +29,7 @@ import com.sdc.model.Jobs;
 @Repository
 public class JobsRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger(JobsRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	 @Autowired
 	 @Qualifier("jdbcTemplate3")

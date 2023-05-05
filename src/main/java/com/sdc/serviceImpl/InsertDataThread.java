@@ -5,6 +5,7 @@ import com.sdc.model.MappingData;
 import com.sdc.repository.FieldsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class InsertDataThread extends Thread{
 
-    private static final Logger logger = LoggerFactory.getLogger(InsertDataThread.class);
+    private static final Logger logger = LoggerFactory.getLogger("console");
     private static final Logger fileLogger = LoggerFactory.getLogger("file");
 
     JdbcTemplate jdbcTemplateSource;
@@ -55,6 +56,7 @@ public class InsertDataThread extends Thread{
     @Override
     public void run() {
         currentThread().setName(threadName);
+        MDC.put("logFileName", threadName);
 
         String table1 = mappingData.get(0).getTable();
         logger.info("Select records from table: {}", table1);

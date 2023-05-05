@@ -26,7 +26,7 @@ import com.sdc.service.UserService;
 @RestController
 public class JobsController {
 
-	private static final Logger logger = LoggerFactory.getLogger(JobsController.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	@Autowired
 	UserService userService;

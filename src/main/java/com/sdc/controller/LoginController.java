@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class LoginController {
 
-	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	HttpServletRequest request;
 	

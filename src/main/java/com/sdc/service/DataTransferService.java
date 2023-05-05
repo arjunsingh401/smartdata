@@ -10,5 +10,5 @@ import java.util.Map;
  * Author: Koushik
 */
 public interface DataTransferService {
-    void startDataTransfer(List<MappingData> mappingData);
+    void startDataTransfer(List<MappingData> mappingData) throws InterruptedException;
 }

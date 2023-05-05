@@ -28,7 +28,7 @@ import java.util.Set;
 @Service
 public class DataTransferServiceImpl implements DataTransferService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataTransferServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger("console");
 
     JdbcTemplate jdbcTemplateSource;
 
@@ -44,7 +44,7 @@ public class DataTransferServiceImpl implements DataTransferService {
     int batchSize;
 
     @Override
-    public void startDataTransfer(List<MappingData> mappingData) {
+    public void startDataTransfer(List<MappingData> mappingData) throws InterruptedException {
         int mappingId = fieldsRepository.saveMappingData(mappingData);
         logger.info("mappingId : " + mappingId);
         String table1 = mappingData.get(0).getTable();
@@ -63,6 +63,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 jdbcTemplateSource, jdbcTemplateDestination, batchSize, table1 + "-to-" + table2);
 
         insertDataThread.start();
+        insertDataThread.join();
 
         logger.info("Data transfer thread started");
     }

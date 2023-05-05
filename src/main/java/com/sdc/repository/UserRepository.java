@@ -24,7 +24,7 @@ import java.sql.SQLException;
 @Repository
 public class UserRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
+	private static final Logger logger = LoggerFactory.getLogger("console");
 	
 	 @Autowired
 	 @Qualifier("jdbcTemplate3")
