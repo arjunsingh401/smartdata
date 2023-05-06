@@ -398,6 +398,7 @@
 		            success : function(result) {
 		                //handle api output
 		                alert(result);
+		                parent.location.href="${pageContext.request.contextPath}/getJobs";
 		            }
 		
 		        });

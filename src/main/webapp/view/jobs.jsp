@@ -1,3 +1,4 @@
+<%@page import="com.sdc.BatchStatus"%>
 <%@page import="com.sdc.model.Jobs"%>
 <%@page import="com.sdc.model.DbConnection"%>
 <%@page import="java.util.List"%>
@@ -66,8 +67,11 @@
                                    <td  width="10%"><%=job.getUpdated()%></td>
                                    <td  width="10%"><%=job.getStatus()%></td>
                                    <td  width="10%">
+                                   <%if(job.getStatus().equalsIgnoreCase(BatchStatus.CREATED.toString())){ %>
                                         <button type="button" class="btn btn-success" <%=isDisabled%> data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(<%=job.getId()%>)"><i class="fas fa-play"></i></button>
+                                    <%}if(job.getStatus().equalsIgnoreCase(BatchStatus.RUNNING.toString())){ %>
                                         <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(<%=job.getId()%>)"><i class="fas fa-stop-circle"></i></button>
+                                     <%} %>
                                    </td>
                                </tr>
                                 <%  } %>
@@ -126,8 +130,9 @@
                     type: 'POST',
                     url: "${pageContext.request.contextPath}/startDataTransfer/" + jobId,
                     success: function(data) {
-                        alert('Job started successfully!!');
-                        $('#body').empty();
+                        alert('Data transfered successfully!!');
+                        parent.location.href="${pageContext.request.contextPath}/getJobs";
+                        /* $('#body').empty();
                         $.each(data, function (index, value) {
                         var isDisabled = '';
                         if (value.status === 'RUNNING' || value.status === 'COMPLETED' || value.status === 'TERMINATED') {
@@ -147,7 +152,7 @@
                                 + '</td>'
                                 + '</tr>'
                             $('#body').append(tr);
-                        });
+                        }); */
 
                     },
                     error : function(xhr, ajaxOptions, thrownError) {
