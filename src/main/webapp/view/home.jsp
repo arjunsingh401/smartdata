@@ -82,7 +82,7 @@
 				  		<button id="createMapping"  style="display: none;" type="button" class="btn btn-success" onclick="createMapping()">Create Mapping</button>
 				  	</div> -->
 				  	<div class="col-lg-2" style="text-align: left;">
-	                	<button id="transfer"  style="display: none;" type="button" class="btn btn-success" onclick="transfer()">Start Transfer</button>
+	                	<button id="saveJob"  style="display: none;" type="button" class="btn btn-success" onclick="saveJob()">Save Job</button>
 	                </div>
 				  	<div class="col-lg-8" style="text-align: right;">
 				  	
@@ -252,7 +252,7 @@
 		 		
 		 		$('#mappingTable').show();
 		 		$('#createMapping').show();
-		 		$('#transfer').show();
+		 		$('#saveJob').show();
 		 		
 		 		var totalSourceRows = $('#mySoureTable tr').length;
 		 		var totalDestinationRows = $('#myTargetTable tr').length;
@@ -275,7 +275,7 @@
 		 	function resetFields(){
 		 		$('#mappingTable').hide();
 		 		$('#createMapping').hide();
-		 		$('#transfer').hide();
+		 		$('#saveJob').hide();
 		 		
 		 		$("#mySoureTable").empty();
 		        $('#myTargetTable').empty();
@@ -350,7 +350,7 @@
 		 		
 			}
 		
-			function transfer() {
+			function saveJob() {
 		        var totalSourceRows = $('#mySoureTable tr').length;
 		        var totalDestinationRows = $('#myTargetTable tr').length;
 		        var arr = [];
@@ -391,7 +391,7 @@
 		        });
 		
 		        $.ajax({
-		            url: "${pageContext.request.contextPath}/startDataTransfer",
+		            url: "${pageContext.request.contextPath}/saveDataTransferJob",
 		            type : "POST",
 		            contentType: "application/json",
 		            data: JSON.stringify(arr),

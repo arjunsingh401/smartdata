@@ -44,28 +44,50 @@ public class DataTransferServiceImpl implements DataTransferService {
     int batchSize;
 
     @Override
-    public void startDataTransfer(List<MappingData> mappingData) throws InterruptedException {
+    public void startDataTransfer(String jobId) throws InterruptedException {
+
+        Map<String, Object> job = fieldsRepository.getJob(Integer.parseInt(jobId));
+        int mappingId = (int) job.get("MAPPING_ID");
+        logger.info("mappingId : " + mappingId);
+
+        try {
+
+            List<MappingData> mappingData = fieldsRepository.getMappingDetails(mappingId);
+
+            String table1 = mappingData.get(0).getTable();
+            String table2 = mappingData.get(0).getT_table();
+            logger.info("Select records from table: {}", table1);
+
+            jdbcTemplateSource = createJdbcTemplate(mappingData.get(0).getDatabase());
+            jdbcTemplateDestination = createJdbcTemplate(mappingData.get(0).getT_database());
+
+            InsertDataThread insertDataThread = new InsertDataThread(Integer.parseInt(jobId), mappingData, fieldsRepository,
+                    jdbcTemplateSource, jdbcTemplateDestination, batchSize, table1 + "-to-" + table2);
+
+            insertDataThread.start();
+            insertDataThread.join();
+
+            logger.info("Data transfer thread started");
+        } catch (Exception e) {
+            logger.error("Exception occurred: {}", e.getMessage());
+        }
+    }
+
+    @Override
+    public void saveDataTransferJob(List<MappingData> mappingData) {
+        logger.debug("Storing job details with given mapping: {}", mappingData);
+
         int mappingId = fieldsRepository.saveMappingData(mappingData);
         logger.info("mappingId : " + mappingId);
+
         String table1 = mappingData.get(0).getTable();
         String table2 = mappingData.get(0).getT_table();
-        logger.info("Select records from table: {}", table1);
 
         jdbcTemplateSource = createJdbcTemplate(mappingData.get(0).getDatabase());
-        jdbcTemplateDestination = createJdbcTemplate(mappingData.get(0).getT_database());
-
         int records = fieldsRepository.getNumberOfRecords(table1, jdbcTemplateSource);
 
-        int jobId = fieldsRepository.saveJob(mappingId, table1 + "-to-" + table2, table1 + "-to-" + table2, Integer.parseInt(mappingData.get(0).getUserId()),
+        fieldsRepository.saveJob(mappingId, table1 + "-to-" + table2, table1 + "-to-" + table2, Integer.parseInt(mappingData.get(0).getUserId()),
                 records, 0, 0, 0);
-
-        InsertDataThread insertDataThread = new InsertDataThread(jobId, mappingData, fieldsRepository,
-                jdbcTemplateSource, jdbcTemplateDestination, batchSize, table1 + "-to-" + table2);
-
-        insertDataThread.start();
-        insertDataThread.join();
-
-        logger.info("Data transfer thread started");
     }
 
     private JdbcTemplate createJdbcTemplate(String database) {
@@ -83,62 +105,4 @@ public class DataTransferServiceImpl implements DataTransferService {
         return dataSource;
     }
 
-    private void setPreparedStatement(PreparedStatement ps, Map<String, Object> argument) throws SQLException {
-        Set<String> columns = argument.keySet();
-        int index = 1;
-
-        for(String col: columns) {
-        	logger.info("index : "+index+" col : "+col+" value : "+argument.get(col));
-            ps.setObject(index, argument.get(col));
-            index++;
-        }
-    }
-
-    private String getSelectQuery(List<MappingData> mappingData) {
-        
-    	String table = mappingData.get(0).getTable();
-        
-        StringBuilder sb = new StringBuilder("select ");
-
-        for (MappingData map : mappingData) {
-            if (map.getName() != null && !map.getName().equalsIgnoreCase("")) {
-                sb.append(map.getName()).append(",");
-            }
-        }
-        sb.deleteCharAt(sb.length()-1);  
-
-        sb.append(" from ").append(table);
-
-        return sb.toString();
-    }
-
-    private String getInsertQuery(List<MappingData> mappingData) {
-        String table = mappingData.get(0).getT_table();
-
-        StringBuilder queryBuilder = new StringBuilder("insert into ").append(table);
-
-        Iterator<MappingData> itr = mappingData.iterator();
-        MappingData data = itr.next();
-        StringBuilder columnBuilder = new StringBuilder(" (");
-
-        StringBuilder parameterBuilder = new StringBuilder(" values (");
-
-        for(MappingData map : mappingData) {
-        	if(map.getName()!=null && !map.getName().equalsIgnoreCase("")){
-        		columnBuilder.append(map.getT_name()).append(",");
-        		parameterBuilder.append("?,");
-        	}
-        }
-        columnBuilder.deleteCharAt(columnBuilder.length()-1);
-        parameterBuilder.deleteCharAt(parameterBuilder.length()-1);
-        
-        columnBuilder.append(")");
-        parameterBuilder.append(")");
-
-        queryBuilder.append(columnBuilder).append(parameterBuilder);
-
-        logger.info("Insert query: {}", queryBuilder);
-
-        return  queryBuilder.toString();
-    }
 }

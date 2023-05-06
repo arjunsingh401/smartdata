@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
+import com.sdc.service.DataTransferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,10 @@ public class JobsController {
 	UserService userService;
 	
 	@Autowired
-	JobsService jobsService; 
+	JobsService jobsService;
+
+	@Autowired
+	DataTransferService dataTransferService;
 	
 	@RequestMapping(value="/getJobs" , method=RequestMethod.GET)
 	public ModelAndView getJobs(HttpServletRequest request) {
@@ -58,6 +62,22 @@ public class JobsController {
 		if(!userService.reloginRequired(request)) {
 			result = jobsService.stopJob(jobId);
 			logger.info("Job terminated Id: " + jobId);
+			jobs = jobsService.getJobs();
+			logger.info("jobs : "+jobs.size());
+		}
+		return jobs;
+	}
+
+	@RequestMapping(value = "/startDataTransfer/{jobId}", method = RequestMethod.POST)
+	public List<Jobs> startDataTransfer(HttpServletRequest request, @PathVariable("jobId") String jobId) throws InterruptedException {
+		logger.info("Started data transfer job with Job ID: {}", jobId);
+
+		dataTransferService.startDataTransfer(jobId);
+
+		int result = 0;
+		List<Jobs> jobs = new ArrayList<>();
+		ModelAndView modelAndView = new ModelAndView();
+		if(!userService.reloginRequired(request)) {
 			jobs = jobsService.getJobs();
 			logger.info("jobs : "+jobs.size());
 		}

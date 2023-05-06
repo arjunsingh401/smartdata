@@ -5,10 +5,7 @@ import com.sdc.service.DataTransferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,12 +17,12 @@ public class DataTransferController {
     @Autowired
     DataTransferService dataTransferService;
 
-    @RequestMapping(value = "/startDataTransfer", method = RequestMethod.POST)
-    public String startDataTransfer(@RequestBody List<MappingData> mappingData) throws InterruptedException {
+    @RequestMapping(value = "/saveDataTransferJob", method = RequestMethod.POST)
+    public String saveDataTransferJob(@RequestBody List<MappingData> mappingData) throws InterruptedException {
         logger.info("Started data transfer with mapping {}", mappingData);
 
-        dataTransferService.startDataTransfer(mappingData);
+        dataTransferService.saveDataTransferJob(mappingData);
 
-        return "Data transfer started";
+        return "Job saved successfully";
     }
 }
