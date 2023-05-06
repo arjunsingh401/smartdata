@@ -53,6 +53,9 @@
                                 <%
                                     for(int a=0;a<jobs.size();a++){
                                     Jobs job = (Jobs)jobs.get(a);
+                                    String isDisabled = job.getStatus().equalsIgnoreCase("RUNNING")
+                                                        || job.getStatus().equalsIgnoreCase("COMPLETED")
+                                                        || job.getStatus().equalsIgnoreCase("TERMINATED") ? "disabled" : "";
                                  %>
                                 <tr>
                                    <td  width="5%"><%=job.getId()%></td>
@@ -61,9 +64,9 @@
                                    <td  width="10%"><%=job.getPendingRows()%></td>
                                    <td  width="10%"><%=job.getFailedRecords()%></td>
                                    <td  width="10%"><%=job.getUpdated()%></td>
-                                   <td  width="15%"><%=job.getStatus()%></td>
+                                   <td  width="10%"><%=job.getStatus()%></td>
                                    <td  width="10%">
-                                        <button type="button" class="btn btn-success" data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(<%=job.getId()%>)"><i class="fas fa-play"></i></button>
+                                        <button type="button" class="btn btn-success" <%=isDisabled%> data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(<%=job.getId()%>)"><i class="fas fa-play"></i></button>
                                         <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(<%=job.getId()%>)"><i class="fas fa-stop-circle"></i></button>
                                    </td>
                                </tr>
@@ -91,15 +94,57 @@
                         console.log(data);
                         $('#body').empty();
                         $.each(data, function (index, value) {
+                        var isDisabled = '';
+                        if (value.status === 'RUNNING' || value.status === 'COMPLETED' || value.status === 'TERMINATED') {
+                            isDisabled = 'disabled';
+                        }
                         var tr = '<tr>'
                                 + '<td  width="5%">' + value.id + '</td>'
-                                + '<td  width="35%">' + value.description + '</td>'
+                                + '<td  width="30%">' + value.description + '</td>'
                                 + '<td  width="10%">' + value.totalRows + '</td>'
                                 + '<td  width="10%">' + value.pendingRows + '</td>'
                                 + '<td  width="10%">' + value.failedRecords + '</td>'
                                 + '<td  width="10%">' + value.updated + '</td>'
-                                + '<td  width="15%">' + value.status + '</td>'
-                                + '<td  width="15%"><button type="button" class="btn btn-primary" onclick="stopJob(' + value.id + ')">Terminate</button></td>'
+                                + '<td  width="10%">' + value.status + '</td>'
+                                + '<td  width="10%">'
+                                + '<button type="button" class="btn btn-success" ' + isDisabled + ' data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(' + value.id +')"><i class="fas fa-play"></i></button>'
+                                + '<button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(' + value.id +')"><i class="fas fa-stop-circle"></i></button>'
+                                + '</td>'
+                                + '</tr>'
+                            $('#body').append(tr);
+                        });
+
+                    },
+                    error : function(xhr, ajaxOptions, thrownError) {
+                        alert('Unable to terminate the job.');
+                    }
+                });
+            }
+
+            function runJob(jobId) {
+                $.ajax({
+                    type: 'POST',
+                    url: "${pageContext.request.contextPath}/startDataTransfer/" + jobId,
+                    success: function(data) {
+                        alert('Job started successfully!!');
+                        $('#body').empty();
+                        $.each(data, function (index, value) {
+                        var isDisabled = '';
+                        if (value.status === 'RUNNING' || value.status === 'COMPLETED' || value.status === 'TERMINATED') {
+                            isDisabled = 'disabled';
+                        }
+                        var tr = '<tr>'
+                                + '<td  width="5%">' + value.id + '</td>'
+                                + '<td  width="30%">' + value.description + '</td>'
+                                + '<td  width="10%">' + value.totalRows + '</td>'
+                                + '<td  width="10%">' + value.pendingRows + '</td>'
+                                + '<td  width="10%">' + value.failedRecords + '</td>'
+                                + '<td  width="10%">' + value.updated + '</td>'
+                                + '<td  width="10%">' + value.status + '</td>'
+                                + '<td  width="10%">'
+                                + '<button type="button" class="btn btn-success" ' + isDisabled + ' data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(' + value.id +')"><i class="fas fa-play"></i></button>'
+                                + '<button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(' + value.id +')"><i class="fas fa-stop-circle"></i></button>'
+                                + '</td>'
                                 + '</tr>'
                             $('#body').append(tr);
                         });

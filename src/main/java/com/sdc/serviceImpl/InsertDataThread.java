@@ -82,7 +82,7 @@ public class InsertDataThread extends Thread{
             try {
                 status = fieldsRepository.getJobStatus(jobId);
                 if (BatchStatus.TERMINATED.toString().equalsIgnoreCase(status)) {
-                    return;
+                    break;
                 }
 
                 jdbcTemplateSource.setMaxRows(batchSize);

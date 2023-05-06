@@ -7,10 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.sdc.BatchStatus;
 import org.slf4j.Logger;
@@ -237,8 +234,11 @@ public class FieldsRepository {
 		 int i=0;
 		 for(MappingData data : mappingData) {
 			 if(i==0) {
+				 map.put("sourceDatabase", data.getDatabase());
 				 map.put("sourceSchema", data.getSchema());
 				 map.put("sourceTable", data.getTable());
+
+				 map.put("targetDatabase", data.getT_database());
 				 map.put("targetSchema", data.getT_schema());
 				 map.put("targetTable", data.getT_table());
 				 map.put("userId", data.getUserId());
@@ -266,8 +266,12 @@ public class FieldsRepository {
 					 */
 			 i++;
 		 }
-		 String sql="INSERT INTO MAPPING_FIELDS (NAME, DESCRIPTION, SOURCE_SCHEMA_NAME, SOURCE_TABLE_NAME, SOURCE_FIELDS, TARGET_SCHEMA_NAME, TARGET_TABLE_NAME, TARGET_FIELDS, CREATED_BY, CREATED, UPDATED_BY, UPDATED) "
-		 		+ "VALUES ('"+map.get("sourceSchema")+" TO "+map.get("targetSchema")+"', '"+map.get("sourceSchema")+"."+map.get("sourceTable")+" TO "+map.get("targetSchema")+"."+map.get("targetTable")+"', '"+map.get("sourceSchema")+"', '"+map.get("sourceTable")+"', '"+sourceFields.toString()+"', '"+map.get("targetSchema")+"', '"+map.get("targetTable")+"', '"+targetFields+"', "+map.get("userId")+", CURRENT_TIMESTAMP, "+map.get("userId")+", CURRENT_TIMESTAMP)";
+		 String sql="INSERT INTO MAPPING_FIELDS (NAME, DESCRIPTION, SOURCE_SCHEMA_NAME, SOURCE_TABLE_NAME, SOURCE_FIELDS, TARGET_SCHEMA_NAME, " +
+				 "TARGET_TABLE_NAME, TARGET_FIELDS, CREATED_BY, CREATED, UPDATED_BY, UPDATED, SOURCE_DATABASE, TARGET_DATABASE) "
+		 		+ "VALUES ('"+map.get("sourceSchema")+" TO "+map.get("targetSchema")+"', '"+map.get("sourceSchema")+"."+map.get("sourceTable")
+				 +" TO "+map.get("targetSchema")+"."+map.get("targetTable")+"', '"+map.get("sourceSchema")+"', '"+map.get("sourceTable")+"', '"
+				 +sourceFields.toString()+"', '"+map.get("targetSchema")+"', '"+map.get("targetTable")+"', '"+targetFields+"', "
+				 +map.get("userId")+", CURRENT_TIMESTAMP, "+map.get("userId")+", CURRENT_TIMESTAMP, '" + map.get("sourceDatabase") + "', '" + map.get("targetDatabase") + "')";
 		 logger.info("sql : "+sql);
 		//int id = jdbcTemplate3.update(sql);
 		//logger.info("id : "+id);
@@ -324,7 +328,7 @@ public class FieldsRepository {
 	 }
 
 	public Map<String, Object> getJob(int jobId) {
-		String sql = "SELECT MAPPING_ID, TOTAL_ROWS, PENDING_ROWS, FAILED_RECORDS FROM JOBS WHERE ID=" + jobId;
+		String sql = "SELECT MAPPING_ID, NAME, DESCRIPTION, TOTAL_ROWS, PENDING_ROWS, FAILED_RECORDS FROM JOBS WHERE ID=" + jobId;
 		logger.info("sql : " + sql);
 
 		try {
@@ -367,5 +371,43 @@ public class FieldsRepository {
 			logger.error("error ",e);
 		}
 		return "";
+	}
+
+	public List<MappingData> getMappingDetails(int mappingId) throws Exception {
+		 String sql = "SELECT SOURCE_DATABASE, SOURCE_SCHEMA_NAME, SOURCE_TABLE_NAME, SOURCE_FIELDS, TARGET_DATABASE, " +
+				 " TARGET_SCHEMA_NAME, TARGET_TABLE_NAME, TARGET_FIELDS " +
+				 " FROM MAPPING_FIELDS WHERE ID=" + mappingId;
+		 logger.info("Reading mapping details for mapping id: {}", mappingId);
+		 List<MappingData> mappingData = new ArrayList<>();
+		 MappingData data;
+		try {
+			Map<String, Object> result = jdbcTemplate3.queryForMap(sql);
+
+			List<String> sourceFields = Arrays.asList(((String) result.get("SOURCE_FIELDS")).split(","));
+
+			List<String> targetFields = Arrays.asList(((String) result.get("TARGET_FIELDS")).split(","));
+
+			if (sourceFields.size() == targetFields.size()) {
+				for (int i=0; i< sourceFields.size(); i++) {
+					data = new MappingData();
+					data.setDatabase((String) result.get("SOURCE_DATABASE"));
+					data.setSchema((String) result.get("SOURCE_SCHEMA_NAME"));
+					data.setTable((String) result.get("SOURCE_TABLE_NAME"));
+					data.setName(sourceFields.get(i));
+
+					data.setT_database((String) result.get("TARGET_DATABASE"));
+					data.setT_schema((String) result.get("TARGET_SCHEMA_NAME"));
+					data.setT_table((String) result.get("TARGET_TABLE_NAME"));
+					data.setT_name(targetFields.get(i));
+					mappingData.add(data);
+				}
+			} else {
+				throw new Exception("Source and Target column size does not match");
+			}
+		}catch (Exception e) {
+			throw e;
+		}
+		return mappingData;
+
 	}
 }
