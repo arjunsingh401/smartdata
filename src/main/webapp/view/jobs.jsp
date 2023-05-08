@@ -56,13 +56,14 @@
                                     String isDisabled = job.getStatus().equalsIgnoreCase("RUNNING")
                                                         || job.getStatus().equalsIgnoreCase("COMPLETED")
                                                         || job.getStatus().equalsIgnoreCase("TERMINATED") ? "disabled" : "";
+                                    String isVisible = job.getFailedRecords() <= 0 ? "hidden" : "";
                                  %>
                                 <tr>
                                    <td  width="5%"><%=job.getId()%></td>
-                                   <td  width="30%"><%=job.getDescription()%></td>
+                                   <td  width="25%"><%=job.getDescription()%></td>
                                    <td  width="10%"><%=job.getTotalRows()%></td>
                                    <td  width="10%"><%=job.getPendingRows()%></td>
-                                   <td  width="10%"><%=job.getFailedRecords()%></td>
+                                   <td  width="10%"><%=job.getFailedRecords()%>&nbsp;<a href="${pageContext.request.contextPath}/getErrorFile/<%=job.getErrorFileName()%>" <%=isVisible%>>(View Errors)</a></td>
                                    <td  width="10%"><%=job.getUpdated()%></td>
                                    <td  width="10%"><%=job.getStatus()%></td>
                                    <td  width="10%">
@@ -100,10 +101,10 @@
                         }
                         var tr = '<tr>'
                                 + '<td  width="5%">' + value.id + '</td>'
-                                + '<td  width="30%">' + value.description + '</td>'
+                                + '<td  width="25%">' + value.description + '</td>'
                                 + '<td  width="10%">' + value.totalRows + '</td>'
                                 + '<td  width="10%">' + value.pendingRows + '</td>'
-                                + '<td  width="10%">' + value.failedRecords + '</td>'
+                                + '<td  width="10%">' + value.failedRecords + '&nbsp;<a href="">(View Errors)</a></td>'
                                 + '<td  width="10%">' + value.updated + '</td>'
                                 + '<td  width="10%">' + value.status + '</td>'
                                 + '<td  width="10%">'
@@ -135,10 +136,10 @@
                         }
                         var tr = '<tr>'
                                 + '<td  width="5%">' + value.id + '</td>'
-                                + '<td  width="30%">' + value.description + '</td>'
+                                + '<td  width="25%">' + value.description + '</td>'
                                 + '<td  width="10%">' + value.totalRows + '</td>'
                                 + '<td  width="10%">' + value.pendingRows + '</td>'
-                                + '<td  width="10%">' + value.failedRecords + '</td>'
+                                + '<td  width="10%">' + value.failedRecords + '&nbsp;<a href="">(View Errors)</a></td>'
                                 + '<td  width="10%">' + value.updated + '</td>'
                                 + '<td  width="10%">' + value.status + '</td>'
                                 + '<td  width="10%">'

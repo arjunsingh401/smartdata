@@ -36,7 +36,8 @@ public class JobsRepository {
 	 private JdbcTemplate jdbcTemplate3;
 	
 	 public List<Jobs> getJobs() {
-		 	String sql ="select ID, NAME, DESCRIPTION, TOTAL_ROWS, PENDING_ROWS, FAILED_RECORDS, UPDATED, STATUS from JOBS ORDER BY ID DESC";
+		 	String sql ="select ID, NAME, DESCRIPTION, TOTAL_ROWS, PENDING_ROWS, FAILED_RECORDS, UPDATED, " +
+					"STATUS, ERROR_FILE_NAME from JOBS ORDER BY ID DESC";
 			
 			logger.info(" sql :"+sql);
 			List<Jobs> jobs = new ArrayList<Jobs>(); 
@@ -59,6 +60,7 @@ public class JobsRepository {
 					jobs.setUpdated(rs.getString("UPDATED"));
 					jobs.setStatus(rs.getString("STATUS"));
 					jobs.setFailedRecords(rs.getLong("FAILED_RECORDS"));
+					jobs.setErrorFileName(rs.getString("ERROR_FILE_NAME"));
 				return  jobs;
 		        }
 		    });
