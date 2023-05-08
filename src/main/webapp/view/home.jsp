@@ -398,6 +398,7 @@
 		            success : function(result) {
 		                //handle api output
 		                alert(result);
+		                parent.location.href="${pageContext.request.contextPath}/getJobs";
 		            }
 		
 		        });
@@ -431,8 +432,15 @@
 		 		    async:false,
 		 		    success: function(data) {
 		 		    	$('#loadingModal').modal('hide');
+		 		    	if(data==''){
+		 		    	alert('Unable to Connect Source DB.');	
+		 		    	}else{
 		 		    	alert('Source connection successfull');
-		 		       	document.getElementById('sourceDatabase').disabled = true;
+		 		        $('#targetDatabase').find('option[value='+sourceDatabase+']').remove();
+
+		 		    	document.getElementById('sourceDatabase').disabled = true;
+		 		    	}
+		 		       	
 		 		        return data;
 		 		    },
 					error : function(xhr, ajaxOptions, thrownError) {
@@ -549,7 +557,11 @@
 		 		    async:false,
 		 		    success: function(data) {
 		 		    	$('#loadingModal').modal('hide');
+		 		    	if(data==''){
+			 		    	alert('Unable to Connect Source DB.');	
+			 		    }else{
 		 		    	alert('Target Connection successfull');
+			 		    }
 		 		        document.getElementById('targetDatabase').disabled = true;
 		 		        return data;
 		 		    },
