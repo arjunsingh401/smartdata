@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -63,6 +60,9 @@ public class DataTransferServiceImpl implements DataTransferService {
 
             InsertDataThread insertDataThread = new InsertDataThread(Integer.parseInt(jobId), mappingData, fieldsRepository,
                     jdbcTemplateSource, jdbcTemplateDestination, batchSize, table1 + "-to-" + table2);
+
+            Map<String, Thread> map = new LinkedHashMap<>();
+            map.put("", insertDataThread);
 
             insertDataThread.start();
             insertDataThread.join();

@@ -52,7 +52,7 @@ public class InsertDataThread extends Thread {
     @Override
     public void run() {
         Calendar cal = Calendar.getInstance();
-        threadName = threadName + "_" + new SimpleDateFormat("yyyymmddhhmmss").format(cal.getTime());
+        threadName = threadName + "_" + new SimpleDateFormat("yyyyMMddhhmmss").format(cal.getTime());
         currentThread().setName(threadName);
         MDC.put("logFileName", threadName);
 
