@@ -83,11 +83,9 @@ public class JobsController {
 	public List<Jobs> startDataTransfer(HttpServletRequest request, @PathVariable("jobId") String jobId) throws InterruptedException {
 		logger.info("Started data transfer job with Job ID: {}", jobId);
 
-		dataTransferService.startDataTransfer(jobId);
+		dataTransferService.scheduleJob(jobId);
 
-		int result = 0;
 		List<Jobs> jobs = new ArrayList<>();
-		ModelAndView modelAndView = new ModelAndView();
 		if(!userService.reloginRequired(request)) {
 			jobs = jobsService.getJobs();
 			logger.info("jobs : "+jobs.size());

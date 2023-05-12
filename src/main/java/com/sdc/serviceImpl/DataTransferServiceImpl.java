@@ -4,6 +4,7 @@ import com.sdc.model.DbConnection;
 import com.sdc.model.MappingData;
 import com.sdc.repository.DBConnectionRepository;
 import com.sdc.repository.FieldsRepository;
+import com.sdc.repository.JobsRepository;
 import com.sdc.service.DataTransferService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +15,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -36,14 +36,26 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Autowired
     DBConnectionRepository dbConnectionRepository;
-    
+
+    @Autowired
+    JobsRepository jobsRepository;
+
     @Value("${database.insert.batch.size}")
     int batchSize;
 
     @Override
-    public void startDataTransfer(String jobId) throws InterruptedException {
+    public void scheduleJob(String jobId) {
+        try {
+            jobsRepository.scheduleJob(jobId);
+        } catch (Exception e) {
+            logger.error("Error: {}", e.getMessage());
+        }
+    }
 
-        Map<String, Object> job = fieldsRepository.getJob(Integer.parseInt(jobId));
+    @Override
+    public void startDataTransfer(Integer jobId) throws InterruptedException {
+
+        Map<String, Object> job = fieldsRepository.getJob(jobId);
         int mappingId = (int) job.get("MAPPING_ID");
         logger.info("mappingId : " + mappingId);
 
@@ -58,11 +70,10 @@ public class DataTransferServiceImpl implements DataTransferService {
             jdbcTemplateSource = createJdbcTemplate(mappingData.get(0).getDatabase());
             jdbcTemplateDestination = createJdbcTemplate(mappingData.get(0).getT_database());
 
-            InsertDataThread insertDataThread = new InsertDataThread(Integer.parseInt(jobId), mappingData, fieldsRepository,
+            InsertDataThread insertDataThread = new InsertDataThread(jobId, mappingData, fieldsRepository,
                     jdbcTemplateSource, jdbcTemplateDestination, batchSize, table1 + "-to-" + table2);
 
             insertDataThread.start();
-            insertDataThread.join();
 
             logger.info("Data transfer thread started");
         } catch (Exception e) {
