@@ -97,6 +97,7 @@ public class JobsRepository {
 
 	public int scheduleJob(String jobId) {
 		String sql = "INSERT INTO SCHEDULE (JOB_ID) VALUES (?)";
+		String updateJobSql = "UPDATE JOBS SET STATUS='" + BatchStatus.QUEUED + "' WHERE ID=?";
 		logger.info("Insert schedule : {}", sql);
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -106,6 +107,12 @@ public class JobsRepository {
 				ps.setInt(1, Integer.parseInt(jobId));
 				return ps;
 			}, keyHolder);
+
+			jdbcTemplate3.update(connection -> {
+				PreparedStatement ps = connection.prepareStatement(updateJobSql);
+				ps.setInt(1, Integer.parseInt(jobId));
+				return ps;
+			});
 		} catch (Exception e) {
 			logger.error("Error: {}", e.getMessage());
 		}
@@ -125,7 +132,7 @@ public class JobsRepository {
 	}
 
 	public List<Map<String, Object>> getCreatedJobsByScheduleOrder() {
-		String sql = "SELECT J.ID FROM JOBS J, SCHEDULE S WHERE J.ID = S.JOB_ID and J.STATUS = 'CREATED' ORDER BY S.SCHEDULE_ID";
+		String sql = "SELECT J.ID FROM JOBS J, SCHEDULE S WHERE J.ID = S.JOB_ID and J.STATUS = 'QUEUED' ORDER BY S.SCHEDULE_ID";
 		logger.info("Select jobs by schedule id: {}", sql);
 
 		try {
