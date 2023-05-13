@@ -88,7 +88,7 @@
 				  	
 				  		<button type="button" class="btn btn-primary" onclick="loadFields()">Load Fields</button>
 				  		<button type="button" class="btn btn-danger" onclick="resetFields()">Reset</button>
-				  		<button id="createMapping"  style="display: none;" type="button" class="btn btn-success" onclick="createMapping()">Create Mapping</button>
+				  		<!-- <button id="createMapping"  style="display: none;" type="button" class="btn btn-success" onclick="createMapping()">Create Mapping</button> -->
 				  	</div>
 				 </div>
 				 <br/>
@@ -251,18 +251,17 @@
 		        }
 		 		
 		 		$('#mappingTable').show();
-		 		$('#createMapping').show();
+		 		/* $('#createMapping').show(); */
 		 		$('#saveJob').show();
 		 		
 		 		var totalSourceRows = $('#mySoureTable tr').length;
 		 		var totalDestinationRows = $('#myTargetTable tr').length;
-				
 				var total = totalSourceRows;
 				while(total != totalDestinationRows){
 					total -- ;
 					document.getElementById("mySoureTable").deleteRow(total);
 				}
-		 		
+				//alert("totalSourceRows after delete : "+$('#mySoureTable tr').length);
 		        document.getElementById('sourceDatabase').disabled = true;
 		        document.getElementById('schema').disabled = true;
 		        document.getElementById('table').disabled = true ;
@@ -274,7 +273,7 @@
 		 	
 		 	function resetFields(){
 		 		$('#mappingTable').hide();
-		 		$('#createMapping').hide();
+		 		/* $('#createMapping').hide(); */
 		 		$('#saveJob').hide();
 		 		
 		 		$("#mySoureTable").empty();
@@ -561,8 +560,9 @@
 			 		    	alert('Unable to Connect Source DB.');	
 			 		    }else{
 		 		    	alert('Target Connection successfull');
+		 		    	 document.getElementById('targetDatabase').disabled = true;
 			 		    }
-		 		        document.getElementById('targetDatabase').disabled = true;
+		 		       
 		 		        return data;
 		 		    },
 					error : function(xhr, ajaxOptions, thrownError) {
