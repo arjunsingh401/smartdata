@@ -25,6 +25,8 @@ public class Jobs {
 
 	private long failedRecords;
 
+	private String errorFileName;
+
 	public Jobs() {
 		super();
 	}
@@ -126,5 +128,16 @@ public class Jobs {
 
 	public void setFailedRecords(long failedRecords) {
 		this.failedRecords = failedRecords;
+	}
+
+	public String getErrorFileName() {
+		if (errorFileName != null)
+			return errorFileName;
+		else
+			return "";
+	}
+
+	public void setErrorFileName(String errorFileName) {
+		this.errorFileName = errorFileName;
 	}
 }

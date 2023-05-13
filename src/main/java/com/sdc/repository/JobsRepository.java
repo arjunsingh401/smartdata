@@ -6,8 +6,10 @@ package com.sdc.repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.sdc.BatchStatus;
 import org.slf4j.Logger;
@@ -17,9 +19,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.sdc.model.DbConnection;
 import com.sdc.model.Jobs;
 
 /**
@@ -36,7 +39,8 @@ public class JobsRepository {
 	 private JdbcTemplate jdbcTemplate3;
 	
 	 public List<Jobs> getJobs() {
-		 	String sql ="select ID, NAME, DESCRIPTION, TOTAL_ROWS, PENDING_ROWS, FAILED_RECORDS, UPDATED, STATUS from JOBS ORDER BY ID DESC";
+		 	String sql ="select ID, NAME, DESCRIPTION, TOTAL_ROWS, PENDING_ROWS, FAILED_RECORDS, UPDATED, " +
+					"STATUS, ERROR_FILE_NAME from JOBS ORDER BY ID DESC";
 			
 			logger.info(" sql :"+sql);
 			List<Jobs> jobs = new ArrayList<Jobs>(); 
@@ -59,6 +63,7 @@ public class JobsRepository {
 					jobs.setUpdated(rs.getString("UPDATED"));
 					jobs.setStatus(rs.getString("STATUS"));
 					jobs.setFailedRecords(rs.getLong("FAILED_RECORDS"));
+					jobs.setErrorFileName(rs.getString("ERROR_FILE_NAME"));
 				return  jobs;
 		        }
 		    });
@@ -79,7 +84,7 @@ public class JobsRepository {
 		try {
 			return jdbcTemplate3.update(connection -> {
 				PreparedStatement ps = connection.prepareStatement(sql);
-				ps.setString(1, jobId);
+				ps.setInt(1, Integer.parseInt(jobId));
 				return ps;
 			});
 		}catch (Exception e) {
@@ -88,5 +93,46 @@ public class JobsRepository {
 		return 0;
 
 
+	}
+
+	public int scheduleJob(String jobId) {
+		String sql = "INSERT INTO SCHEDULE (JOB_ID) VALUES (?)";
+		logger.info("Insert schedule : {}", sql);
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		try{
+			jdbcTemplate3.update(connection -> {
+				PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				ps.setInt(1, Integer.parseInt(jobId));
+				return ps;
+			}, keyHolder);
+		} catch (Exception e) {
+			logger.error("Error: {}", e.getMessage());
+		}
+		return keyHolder.getKey().intValue();
+	}
+
+	public List<Map<String, Object>> getRunningJobsByScheduleOrder() {
+		 String sql = "SELECT J.ID FROM JOBS J, SCHEDULE S WHERE J.ID = S.JOB_ID and J.STATUS = 'RUNNING' ORDER BY S.SCHEDULE_ID";
+		 logger.info("Select jobs by schedule id: {}", sql);
+
+		 try {
+			 return jdbcTemplate3.queryForList(sql);
+		 } catch (Exception e) {
+			 logger.error("Error: {}", e.getMessage());
+		 }
+		 return new ArrayList<>();
+	}
+
+	public List<Map<String, Object>> getCreatedJobsByScheduleOrder() {
+		String sql = "SELECT J.ID FROM JOBS J, SCHEDULE S WHERE J.ID = S.JOB_ID and J.STATUS = 'CREATED' ORDER BY S.SCHEDULE_ID";
+		logger.info("Select jobs by schedule id: {}", sql);
+
+		try {
+			return jdbcTemplate3.queryForList(sql);
+		} catch (Exception e) {
+			logger.error("Error: {}", e.getMessage());
+		}
+		return new ArrayList<>();
 	}
 }

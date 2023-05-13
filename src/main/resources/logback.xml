@@ -5,6 +5,7 @@
         </encoder>
     </appender>
 
+    <property resource="application.properties" />
     <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
         <discriminator>
             <key>logFileName</key>
@@ -12,7 +13,7 @@
         </discriminator>
         <sift>
             <appender name="FILE-${logFileName}" class="ch.qos.logback.core.FileAppender">
-                <file>C:\Users\Public\Documents\smartdata\${logFileName}.log</file>
+                <file>${error.file.path}\${logFileName}.log</file>
                 <append>true</append>
                 <layout class="ch.qos.logback.classic.PatternLayout">
                     <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>

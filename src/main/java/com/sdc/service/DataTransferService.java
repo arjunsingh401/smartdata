@@ -9,7 +9,9 @@ import java.util.List;
  * Author: Koushik
 */
 public interface DataTransferService {
-    void startDataTransfer(String mappingData) throws InterruptedException;
+    void startDataTransfer(Integer jobId) throws InterruptedException;
 
     void saveDataTransferJob(List<MappingData> mappingData);
+
+    void scheduleJob(String jobId);
 }

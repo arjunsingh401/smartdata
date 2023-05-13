@@ -410,4 +410,22 @@ public class FieldsRepository {
 		return mappingData;
 
 	}
+
+	public int updateErrorFileName(int jobId, String threadName) {
+		String sql = "UPDATE JOBS SET ERROR_FILE_NAME=?, UPDATED=CURRENT_TIMESTAMP WHERE ID=?";
+
+		logger.info("sql : "+sql);
+
+		try {
+			return jdbcTemplate3.update(connection -> {
+				PreparedStatement ps = connection.prepareStatement(sql);
+				ps.setString(1, threadName);
+				ps.setLong(2, jobId);
+				return ps;
+			});
+		}catch (Exception e) {
+			logger.error("error ", e);
+		}
+		return 0;
+	}
 }
