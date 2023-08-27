@@ -99,9 +99,13 @@
                         console.log(data);
                         $('#body').empty();
                         $.each(data, function (index, value) {
-                        var isDisplay = '';
-                        if (value.status === 'RUNNING' || value.status === 'COMPLETED' || value.status === 'TERMINATED') {
-                            isDisplay = 'style="display: none;"';
+                        var isDisplayRun = '';
+                        var isDisplayStop = 'style="display: none;"';
+                        if (value.status === 'RUNNING' || value.status === 'COMPLETED' || value.status === 'TERMINATED' || value.status === 'QUEUED') {
+                            isDisplayRun = 'style="display: none;"';
+                        }
+                        if (value.status === 'RUNNING') {
+                            isDisplayStop = 'style="display: block;"';
                         }
                         var tr = '<tr>'
                                 + '<td  width="5%">' + value.id + '</td>'
@@ -112,8 +116,8 @@
                                 + '<td  width="10%">' + value.updated + '</td>'
                                 + '<td  width="10%">' + value.status + '</td>'
                                 + '<td  width="10%">'
-                                + '<button type="button" class="btn btn-success" ' + isDisplay + ' data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(' + value.id +')"><i class="fas fa-play"></i></button>'
-                                + '<button type="button" class="btn btn-danger" ' + isDisplay + ' data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(' + value.id +')"><i class="fas fa-stop-circle"></i></button>'
+                                + '<button type="button" class="btn btn-success" ' + isDisplayRun + ' data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(' + value.id +')"><i class="fas fa-play"></i></button>'
+                                + '<button type="button" class="btn btn-danger" ' + isDisplayStop + ' data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(' + value.id +')"><i class="fas fa-stop-circle"></i></button>'
                                 + '</td>'
                                 + '</tr>'
                             $('#body').append(tr);
@@ -131,12 +135,16 @@
                     type: 'POST',
                     url: "${pageContext.request.contextPath}/startDataTransfer/" + jobId,
                     success: function(data) {
-                        alert('Data transfer started successfully!!');
+                        alert('Job added to queue successfully!!');
                         $('#body').empty();
                         $.each(data, function (index, value) {
-                        var isDisplay = '';
-                        if (value.status === 'RUNNING' || value.status === 'COMPLETED' || value.status === 'TERMINATED') {
-                            isDisplay = 'style="display: none;"';
+                        var isDisplayRun = '';
+                        var isDisplayStop = 'style="display: none;"';
+                        if (value.status === 'RUNNING' || value.status === 'COMPLETED' || value.status === 'TERMINATED' || value.status === 'QUEUED') {
+                            isDisplayRun = 'style="display: none;"';
+                        }
+                        if (value.status === 'RUNNING') {
+                            isDisplayStop = 'style="display: block;"';
                         }
                         var tr = '<tr>'
                                 + '<td  width="5%">' + value.id + '</td>'
@@ -147,8 +155,8 @@
                                 + '<td  width="10%">' + value.updated + '</td>'
                                 + '<td  width="10%">' + value.status + '</td>'
                                 + '<td  width="10%">'
-                                + '<button type="button" class="btn btn-success" ' + isDisplay + ' data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(' + value.id +')"><i class="fas fa-play"></i></button>'
-                                + '<button type="button" class="btn btn-danger" ' + isDisplay + ' data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(' + value.id +')"><i class="fas fa-stop-circle"></i></button>'
+                                + '<button type="button" class="btn btn-success" ' + isDisplayRun + ' data-toggle="tooltip" data-placement="bottom" title="Run Job" onclick="runJob(' + value.id +')"><i class="fas fa-play"></i></button>'
+                                + '<button type="button" class="btn btn-danger" ' + isDisplayStop + ' data-toggle="tooltip" data-placement="bottom" title="Terminate Job" onclick="stopJob(' + value.id +')"><i class="fas fa-stop-circle"></i></button>'
                                 + '</td>'
                                 + '</tr>'
                             $('#body').append(tr);

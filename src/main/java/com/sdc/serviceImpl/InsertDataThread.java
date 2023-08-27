@@ -73,12 +73,13 @@ public class InsertDataThread extends Thread {
         //long currentFailed = 0l;
 
         String selectOffsetQuery;
-        String status;
+        String status = BatchStatus.COMPLETED.toString();
         List<Map<String, Object>> result = null;
         for (int i = 0; i < numberOfBatches; i++) {
             try {
                 status = fieldsRepository.getJobStatus(jobId);
                 if (BatchStatus.TERMINATED.toString().equalsIgnoreCase(status)) {
+                    status = BatchStatus.TERMINATED.toString();
                     break;
                 }
 
@@ -94,7 +95,9 @@ public class InsertDataThread extends Thread {
 
                 String table2 = mappingData.get(0).getT_table();
 
-                fieldsRepository.updateJob(jobId, (pendingRecords -= result.size()), 0, BatchStatus.RUNNING.toString());
+                pendingRecords -= result.size();
+
+                fieldsRepository.updateJob(jobId, pendingRecords, 0, BatchStatus.RUNNING.toString());
 
                 logger.info("Insert records into table: {}", table2);
 
@@ -122,12 +125,28 @@ public class InsertDataThread extends Thread {
                 logger.error("currentFailed : " + currentFailed);
                 fieldsRepository.updateFailedRecords(jobId, totalFailed);
 
-                fileLogger.error("Error inserting data: {}", e.getMessage());
+                if (e.getCause() instanceof BatchUpdateException) {
+                    BatchUpdateException be = (BatchUpdateException) e.getCause();
+                    int[] batchRes = be.getUpdateCounts();
+                    if (batchRes != null && batchRes.length > 0) {
+                        for (int index = 0; index < batchRes.length; index++) {
+                            if (batchRes[index] == Statement.EXECUTE_FAILED) {
+                                fileLogger.error("Error execution: {}, codeFail: {}, line: {}", index, batchRes[index], result.get(index));
+                            }
+                        }
+                    }
+                }
+
+                //fileLogger.error("Error inserting data: {}", e.getMessage());
 
                 logger.error("Exception occurred: {}", e.getMessage());
             }
         }
-        fieldsRepository.updateJob(jobId, 0, 0, BatchStatus.COMPLETED.toString());
+        if (BatchStatus.TERMINATED.toString().equalsIgnoreCase(status)) {
+            fieldsRepository.updateJob(jobId, pendingRecords, 0, status);
+        } else if (BatchStatus.RUNNING.toString().equalsIgnoreCase(status)) {
+            fieldsRepository.updateJob(jobId, pendingRecords, 0, BatchStatus.COMPLETED.toString());
+        }
     }
 
     private long insertRecords(JdbcTemplate jdbcTemplateDestination, List<Map<String, Object>> result) {

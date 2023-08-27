@@ -12,9 +12,18 @@
             <defaultValue>unknown</defaultValue>
         </discriminator>
         <sift>
-            <appender name="FILE-${logFileName}" class="ch.qos.logback.core.FileAppender">
+            <appender name="FILE-${logFileName}" class="ch.qos.logback.core.rolling.RollingFileAppender">
                 <file>${error.file.path}\${logFileName}.log</file>
                 <append>true</append>
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>${error.file.path}\${logFileName}-%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+                    <!-- each archived file's size will be max 10MB -->
+                    <maxFileSize>10MB</maxFileSize>
+                    <!-- 30 days to keep -->
+                    <maxHistory>30</maxHistory>
+                    <!-- total size of all archive files, if total size > 100GB, it will delete old archived file -->
+                    <totalSizeCap>100GB</totalSizeCap>
+                </rollingPolicy>
                 <layout class="ch.qos.logback.classic.PatternLayout">
                     <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
                 </layout>
